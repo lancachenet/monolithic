@@ -17,13 +17,9 @@ echo "    default \$http_host;" >> $outputfile
 	key=$(jq -r ".cache_domains[$entry].name" cache_domains.json)
 	jq -r ".cache_domains[$entry].domain_files | to_entries[] | .key" cache_domains.json | while read fileid; do
 		jq -r ".cache_domains[$entry].domain_files[$fileid]" cache_domains.json | while read filename; do
-			echo "" >> $outputfile
 			cat ${filename} | while read fileentry; do
-				# Ignore comments
-				case "$var" in
-				    \#*) continue ;;
-				esac
-				if grep -q "$fileentry" $outputfile; then
+				echo $fileentry
+				if grep -q "^$fileentry" $outputfile; then
 					continue
 				fi
 				echo "    ${fileentry} ${key};" >> $outputfile
