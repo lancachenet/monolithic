@@ -12,6 +12,7 @@ ENV BEAT_TIME 1h
 ENV LOGFILE_RETENTION 3560
 ENV CACHE_DOMAIN_REPO https://github.com/uklans/cache-domains.git
 ENV UPSTREAM_DNS 8.8.8.8 8.8.4.4
+ENV NGINX_WORKER_PROCESSES auto
 
 COPY overlay/ /
 
