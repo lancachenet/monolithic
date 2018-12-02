@@ -1,5 +1,4 @@
 FROM vibroaxe/generic:supervisord
-#FROM 1and1internet/ubuntu-18-nginx:latest
 MAINTAINER SteamCache.Net Team <team@steamcache.net>
 
 ENV GENERICCACHE_VERSION 2
@@ -25,5 +24,4 @@ RUN mkdir -m 755 -p /data/cachedomains		;\
 VOLUME ["/data/logs", "/data/cache", "/data/cachedomains", "/var/www"]
 
 EXPOSE 80
-
 WORKDIR /scripts

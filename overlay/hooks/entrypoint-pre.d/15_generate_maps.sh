@@ -27,5 +27,5 @@ jq -r '.cache_domains | to_entries[] | .key' cache_domains.json | while read CAC
 done
 echo "}" >> $OUTPUTFILE
 cat $OUTPUTFILE
-cp $OUTPUTFILE /etc/nginx/conf.d/20_maps.conf
+cp $OUTPUTFILE /etc/nginx/conf.d/30_maps.conf
 rm -rf $TEMP_PATH
