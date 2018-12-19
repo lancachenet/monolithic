@@ -1,4 +1,4 @@
-# Game Download Cache Docker Container
+# Monolithic Game Download Cache Docker Container
 
 ## Introduction
 
@@ -16,7 +16,7 @@ This container is designed to support any game that uses HTTP and also supports 
  - Uplay (Ubisoft)
  - Windows Updates
 
-This is the best container to use for all game caching and should be used for Steam in preference to the steamcache/steamcache container.
+This is the best container to use for all game caching and should be used for Steam in preference to the steamcache/steamcache and steamcache/generic containers.
 
 ## Usage
 
@@ -32,29 +32,22 @@ Run the container using the following to allow TCP port 80 (HTTP) and to mount `
 docker run \
   --restart unless-stopped \
   --name cache-steam \
-  -v /cache/steam/data:/data/cache \
-  -v /cache/steam/logs:/data/logs \
+  -v /cache/data:/data/cache \
+  -v /cache/logs:/data/logs \
   -p 192.168.1.10:80:80 \
-  steamcache/generic:latest
+  steamcache/monolithic:latest
 ```
 
-## Caching Multiple Services
+Unlike steamcache/generic this service will cache all cdn services (defined in the [uklans cache-domains repo](https://github.com/uklans/cache-domains) so multiple instances are not required
 
-If you want to cache multiple game services then you should run multiple instances of the cache and use different IP addresses on the host machine. The first thing is to add an extra IP to your network interface.
+## Changing from steamcache/generic
 
-You should then create a second data directory on the host and then run the container for the service you want to cache:
+If you currently run a steamcache/generic setup then there a few things to note
 
-```
-docker run \
-  --restart unless-stopped \
-  --name cache-blizzard \
-  -v /cache/blizzard/data:/data/cache \
-  -v /cache/blizzard/logs:/data/logs \
-  -p 192.168.1.11:80:80 \
-  steamcache/generic:latest
-```
+1) Your existing cache files are NOT compatible with steamcache/monolithic, unfortunantly your cache will need repriming
+2) You do not need multiple containers, a single monolithic container will cache ALL cdns without collision
+3) steamcache/monolithic should be compatible with your existing container's env vars so you can use the same run command you currently use, just change to steamcache/monolithic
 
-Repeat this for as many services as you want to cache. It is best practice to keep the caches separate for each service to prevent the possibility of overwriting the same data.
 
 ## Origin and SSL
 
