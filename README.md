@@ -1,5 +1,11 @@
 # Monolithic Game Download Cache Docker Container
 
+# DEVELOPMENT WARNING
+
+This docker image is currently still in testing. Although it has been tested at several lans and in theory is superior to steamcache/generic it hasn't undergone the same battle testing (although it's getting pretty close). We recommend you do your own tests before using this image. Please submit any issues you find so we can improve it.
+
+This will eventually "replace" steamcache/generic for the majority of users, but if you don't know what you are doing, we suggest using steamcache/generic for the time being!
+
 ## Introduction
 
 This docker container provides a caching proxy server for game download content. For any network with more than one PC gamer in connected this will drastically reduce internet bandwidth consumption. 
@@ -90,7 +96,7 @@ You can override these using the `-e` argument to docker run and specifying your
 Two environment variables are available to manage both the memory and disk cache for a particular container, and are set to the following defaults.
 ```
 CACHE_MEM_SIZE 500m
-CACHE_DISK_SIZE 500000m
+CACHE_DISK_SIZE 1000000m
 ```
 
 In addition, there is an environment variable to control the max cache age
@@ -142,7 +148,7 @@ If you have any questions, please check [our FAQs](faq.md). If this doesn't answ
 
 The MIT License (MIT)
 
-Copyright (c) 2016 Jessica Smith, Robin Lewis, Brian Wojtczak, Jason Rivers
+Copyright (c) 2019 Jessica Smith, Robin Lewis, Brian Wojtczak, Jason Rivers, James Kinsman
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
