@@ -1,0 +1,75 @@
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - test
+      - publish_latest:
+          context: docker-hub
+          requires:
+            - test
+          filters:
+             branches:
+               only: 
+                 - master
+      - build_children:
+          context: circle-api
+          requires:
+            - publish_latest
+
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/python:2-jessie
+    steps:
+      - checkout
+
+      - setup_remote_docker:   # (2)
+          docker_layer_caching: true # (3)
+      - run:
+          name: Install goss
+          command: |
+            # rather than give internet scripts SU rights, we install to local user bin and add to path
+            mkdir ~/bin
+            export GOSS_DST=~/bin
+            export PATH=$PATH:~/bin
+            curl -fsSL https://goss.rocks/install | sh
+            goss -version
+      - run:
+          name: Test
+          command: |
+            # Don't forget path!
+            export PATH=$PATH:~/bin
+            # Important, change from mount to work on remote docker, see https://github.com/aelsabbahy/goss/pull/271
+            # If using machine image you do not need this.
+            export GOSS_FILES_STRATEGY=cp
+            ./run-tests.sh circleci keepimage
+      - run:
+          name: Save docker image
+          command: |
+            mkdir -p workspace
+            docker save -o workspace/steamcache-monolithic.tar steamcache/monolithic:goss-test
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            steamcache-monolithic.tar
+      - store_test_results:
+          path: reports
+      - store_artifacts:
+          path: reports
+          destination: reports
+  publish_latest:
+    docker:
+      - image: circleci/python:2-jessie
+    steps:
+      - setup_remote_docker:   # (2)
+          docker_layer_caching: true # (3)
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: "Deploy latest to docker hub"
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker load -i /tmp/workspace/steamcache-monolithic.tar
+            docker tag steamcache/monolithic:goss-test steamcache/monolithic:latest
+            docker push steamcache/monolithic:latest

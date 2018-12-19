@@ -1,0 +1,28 @@
+file:
+  /data/logs/access.log:
+    exists: true
+    contains: []
+  /data/logs/error.log:
+    exists: true
+    contains: []
+port:
+  tcp:80:
+    listening: true
+command:
+  /scripts/cache_test.sh:
+    exit-status: 0
+    stdout:
+    - Succesfully Cached
+    timeout: 10000
+process:
+  nginx:
+    running: true
+  supervisord:
+    running: true
+http:
+  http://127.0.0.1/steamcache-heartbeat:
+    status: 204
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 0
+    body: []
