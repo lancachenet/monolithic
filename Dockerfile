@@ -2,7 +2,7 @@ FROM vibroaxe/generic:supervisord
 MAINTAINER SteamCache.Net Team <team@steamcache.net>
 
 ENV GENERICCACHE_VERSION 2
-ENV WEBUSER nginx
+ENV WEBUSER www-data
 ENV CACHE_MEM_SIZE 500m
 ENV CACHE_DISK_SIZE 500000m
 ENV CACHE_MAX_AGE 3560d
