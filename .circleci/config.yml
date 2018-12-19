@@ -11,10 +11,6 @@ workflows:
              branches:
                only: 
                  - master
-      - build_children:
-          context: circle-api
-          requires:
-            - publish_latest
 
 version: 2
 jobs:
