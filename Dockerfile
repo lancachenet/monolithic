@@ -1,10 +1,10 @@
-FROM vibroaxe/generic:supervisord
+FROM steamcache/generic:latest
 MAINTAINER SteamCache.Net Team <team@steamcache.net>
 
 ENV GENERICCACHE_VERSION 2
 ENV WEBUSER www-data
 ENV CACHE_MEM_SIZE 500m
-ENV CACHE_DISK_SIZE 500000m
+ENV CACHE_DISK_SIZE 1000000m
 ENV CACHE_MAX_AGE 3560d
 ENV UPSTREAM_DNS 8.8.8.8 8.8.4.4
 ENV BEAT_TIME 1h
