@@ -57,7 +57,7 @@ Please check that `hostname -I` returns the correct IP before running this snipp
 
 This new container is designed to replace an array of steamcache/generic containers with a single monolithic instance. However if you currently run a steamcache/generic setup then there a few things to note
 
-1) Your existing cache files are NOT compatible with steamcache/monolithic, unfortunantly your cache will need repriming
+1) Your existing cache files are NOT compatible with steamcache/monolithic, unfortunately your cache will need repriming
 2) You do not need multiple containers, a single monolithic container will cache ALL cdns without collision
 3) steamcache/monolithic should be compatible with your existing container's env vars so you can use the same run command you currently use, just change to steamcache/monolithic
 
