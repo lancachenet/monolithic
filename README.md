@@ -50,6 +50,8 @@ docker run --restart unless-stopped --name cache-mono -v /cache/data:/data/cache
 docker run --name sniproxy -p 443:443 steamcache/sniproxy:latest
 echo Please configure your dhcp server to serve dns as $HOST_IP
 ```
+Please check that `hostname -I` returns the correct IP before running this snippet
+
 
 ## Changing from steamcache/generic
 
