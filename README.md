@@ -44,7 +44,7 @@ Unlike steamcache/generic this service will cache all cdn services (defined in t
 
 To initialise a full caching setup with dns and sni proxy you can use the following script as a starting point:
 ```
-HOST_IP=`hostname -I`
+HOST_IP=`hostname -I | head -n 1`
 docker run --restart unless-stopped --name steamcache-dns -p $HOST_IP:53:53/udp -e USE_GENERIC_CACHE=true -e LANCACHE_IP=$HOST_IP steamcache/steamcache-dns:latest
 docker run --restart unless-stopped --name cache-mono -v /cache/data:/data/cache -v /cache/logs:/data/logs -p $HOST_IP:80:80  steamcache/monolithic:latest
 docker run --name sniproxy -p 443:443 steamcache/sniproxy:latest
