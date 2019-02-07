@@ -1,11 +1,5 @@
 # Monolithic Game Download Cache Docker Container
 
-# DEVELOPMENT WARNING
-
-This docker image is currently still in testing. Although it has been tested at several lans and in theory is superior to steamcache/generic it hasn't undergone the same battle testing (although it's getting pretty close). We recommend you do your own tests before using this image. Please submit any issues you find so we can improve it.
-
-This will eventually "replace" steamcache/generic for the majority of users, but if you don't know what you are doing, we suggest using steamcache/generic for the time being!
-
 ## Introduction
 
 This docker container provides a caching proxy server for game download content. For any network with more than one PC gamer in connected this will drastically reduce internet bandwidth consumption. 
@@ -37,7 +31,7 @@ Run the container using the following to allow TCP port 80 (HTTP) and to mount `
 ```
 docker run \
   --restart unless-stopped \
-  --name cache-steam \
+  --name cache-mono \
   -v /cache/data:/data/cache \
   -v /cache/logs:/data/logs \
   -p 192.168.1.10:80:80 \
@@ -46,9 +40,20 @@ docker run \
 
 Unlike steamcache/generic this service will cache all cdn services (defined in the [uklans cache-domains repo](https://github.com/uklans/cache-domains) so multiple instances are not required
 
+## Simple Full Stack startup
+
+To initialise a full caching setup with dns and sni proxy you can use the following script as a starting point:
+```
+HOST_IP=`hostname -I`
+docker run --restart unless-stopped --name steamcache-dns -p $HOST_IP:53:53/udp -e USE_GENERIC_CACHE=true -e LANCACHE_IP=$HOST_IP steamcache/steamcache-dns:latest
+docker run --restart unless-stopped --name cache-mono -v /cache/data:/data/cache -v /cache/logs:/data/logs -p $HOST_IP:80:80  steamcache/monolithic:latest
+docker run --name sniproxy -p 443:443 steamcache/sniproxy:latest
+echo Please configure your dhcp server to serve dns as $HOST_IP
+```
+
 ## Changing from steamcache/generic
 
-If you currently run a steamcache/generic setup then there a few things to note
+This new container is designed to replace an array of steamcache/generic containers with a single monolithic instance. However if you currently run a steamcache/generic setup then there a few things to note
 
 1) Your existing cache files are NOT compatible with steamcache/monolithic, unfortunantly your cache will need repriming
 2) You do not need multiple containers, a single monolithic container will cache ALL cdns without collision
@@ -118,7 +123,7 @@ Access logs are written to /data/logs. If you don't particularly care about keep
 You can tail them using:
 
 ```
-docker exec -it cache-steam tail -f /data/logs/access.log
+docker exec -it cache-mono tail -f /data/logs/access.log
 ```
 
 If you have mounted the volume externally then you can tail it on the host instead.
