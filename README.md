@@ -31,7 +31,7 @@ Run the container using the following to allow TCP port 80 (HTTP) and to mount `
 ```
 docker run \
   --restart unless-stopped \
-  --name cache-mono \
+  --name lancache \
   -v /cache/data:/data/cache \
   -v /cache/logs:/data/logs \
   -p 192.168.1.10:80:80 \
@@ -53,9 +53,9 @@ echo Please configure your dhcp server to serve dns as $HOST_IP
 Please check that `hostname -I` returns the correct IP before running this snippet
 
 
-## Changing from steamcache/generic
+## Changing from steamcache/steamcache and steamcache/generic
 
-This new container is designed to replace an array of steamcache/generic containers with a single monolithic instance. However if you currently run a steamcache/generic setup then there a few things to note
+This new container is designed to replace an array of steamcache or generic containers with a single monolithic instance. However if you currently run a steamcache or generic setup then there a few things to note
 
 1) Your existing cache files are NOT compatible with steamcache/monolithic, unfortunately your cache will need repriming
 2) You do not need multiple containers, a single monolithic container will cache ALL cdns without collision
@@ -118,6 +118,19 @@ You can override these at run time by adding the following to your docker run co
 -e CACHE_MEM_SIZE=4000m -e CACHE_DISK_SIZE=1000g
 ```
 
+## Tuning your cache
+Steam in particular has some inherrent limitations caused by the adherence to the HTTP spec connection pool. As such steam download speed are highly dependent on the latency between your server and the steam cdn servers. In the event you find your initial download speed with the default settings is slow this can be resolved by allocating more IP's to your ache. We suggest adding one IP at a time to see how much gain can be had (4 seems to work for a number of people)
+### Step 1: Adding IP's to your docker host
+Consult your OS documentation in order to add additional IP addresses onto your docker cache host machine
+### Step 2: Adding IP's to your cache container
+In order for this to work you need to add the port maps onto the relevant cdn container (for example steam). 
+* If you are using `steamcache/monolithic` then using `-p 80:80` should be sufficient as per the documentation. 
+* If you are using `steamcache/generic` or `steamcache/steamcache` then add multiple `-p <IPadddress>:80:80` for each IP you have added. For example `-p 10.10.1.30:80:80 -p 10.10.1.31:80:80`
+### Step 3: Informing steamcache-dns of the extra IP's
+Finally we need to inform steamcache-dns that STEAM is now available on multiple IP addresses. This can be done on the command line using the following command `-e STEAMCACHE_IP="10.10.1.30 10.10.1.31"`. Note the quotes surrounding the multiple IP addresses.
+### Step 4: Testing
+Choose a game which has not been seen by the cache before (or clear your `/data/cache` folder) and start it downloading. Check to see what the maximum speed seen by your steam client is. If necessary repeat steps 1-3 with additional IPs until you see a download equivalent to your uncached steam client or no longer see an improvement vs the previous IP allocation.
+
 ## Monitoring
 
 Access logs are written to /data/logs. If you don't particularly care about keeping them, you don't need to mount an external volume into the container.
@@ -125,7 +138,7 @@ Access logs are written to /data/logs. If you don't particularly care about keep
 You can tail them using:
 
 ```
-docker exec -it cache-mono tail -f /data/logs/access.log
+docker exec -it lancache tail -f /data/logs/access.log
 ```
 
 If you have mounted the volume externally then you can tail it on the host instead.
