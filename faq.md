@@ -56,7 +56,7 @@ This solution is designed to support anything from a couple of people at home, t
 
 No. HTTPS traffic is encrypted. Some of the games, Origin for instance, also serve HTTPS content on the same hostnames we're intercepting - for this you can use SNI Proxy. It listens on port 443 and just passes through any HTTPS traffic. It is unable to inspect the traffic, or cache it.
 
-You can find more at the [steamcache/sniproxy](https://github.com/steamcache/sniproxy) project page.
+You can find more at the [lancachenet/sniproxy](https://github.com/lancachenet/sniproxy) project page.
 
 ## Can I cache Fortnite/Epic Games Launcher?
 
@@ -68,7 +68,7 @@ Yes, almost any HTTP content can be cached. We're maintaining a list of hostname
 
 ## How do you intercept the HTTP traffic?
 
-We prefer to use DNS-based interception This is because it is easier to deploy than other methods. We have a [steamcache-dns](https://github.com/steamcache/steamcache-dns) project that is a self-contained DNS server with options for setting your cache IP addresses.
+We prefer to use DNS-based interception This is because it is easier to deploy than other methods. We have a [lancache-dns](https://github.com/lancachenet/lancache-dns) project that is a self-contained DNS server with options for setting your cache IP addresses.
 
 If you already run a DNS server and are comfortable configuring new override DNS zones, you can also just do this from the list on [uklans/cache-domains](https://github.com/uklans/cache-domains). pfSense's DNS forwarder can easily be configured, and the project has scripts to generate config for unbound.
 
