@@ -16,13 +16,13 @@ This container is designed to support any game that uses HTTP and also supports 
  - Uplay (Ubisoft)
  - Windows Updates
 
-This is the best container to use for all game caching and should be used for Steam in preference to the steamcache/steamcache and steamcache/generic containers.
+This is the best container to use for all game caching and should be used for Steam in preference to the steamcache/steamcache and lancachenet/generic containers.
 
 ## Usage
 
 You need to be able to redirect HTTP traffic to this container. The easiest way to do this is to replace the DNS entries for the various game services with your cache server.
 
-You can use the [steamcache-dns](https://hub.docker.com/r/steamcache/steamcache-dns/) docker image to do this or you can use a DNS service already on your network see the [steamcache-dns github page](https://github.com/steamcache/steamcache-dns) for more information.
+You can use the [steamcache-dns](https://hub.docker.com/r/lancachenet/steamcache-dns/) docker image to do this or you can use a DNS service already on your network see the [steamcache-dns github page](https://github.com/lancachenet/steamcache-dns) for more information.
 
 For the cache files to persist you will need to mount a directory on the host machine into the container. You can do this using `-v <path on host>:/data/cache`. You can do the same with a logs directory as well if you want logs to be persistent as well.
 
@@ -35,31 +35,31 @@ docker run \
   -v /cache/data:/data/cache \
   -v /cache/logs:/data/logs \
   -p 192.168.1.10:80:80 \
-  steamcache/monolithic:latest
+  lancachenet/monolithic:latest
 ```
 
-Unlike steamcache/generic this service will cache all cdn services (defined in the [uklans cache-domains repo](https://github.com/uklans/cache-domains) so multiple instances are not required
+Unlike lancachenet/generic this service will cache all cdn services (defined in the [uklans cache-domains repo](https://github.com/uklans/cache-domains) so multiple instances are not required
 
 ## Simple Full Stack startup
 
 To initialise a full caching setup with dns and sni proxy you can use the following script as a starting point:
 ```
 HOST_IP=`hostname -I | cut -d' ' -f1`
-docker run --restart unless-stopped --name steamcache-dns --detach -p 53:53/udp -e USE_GENERIC_CACHE=true -e LANCACHE_IP=$HOST_IP steamcache/steamcache-dns:latest
-docker run --restart unless-stopped --name lancache --detach -v /cache/data:/data/cache -v /cache/logs:/data/logs -p 80:80  steamcache/monolithic:latest
-docker run --restart unless-stopped --name sniproxy --detach -p 443:443 steamcache/sniproxy:latest
+docker run --restart unless-stopped --name steamcache-dns --detach -p 53:53/udp -e USE_GENERIC_CACHE=true -e LANCACHE_IP=$HOST_IP lancachenet/steamcache-dns:latest
+docker run --restart unless-stopped --name lancache --detach -v /cache/data:/data/cache -v /cache/logs:/data/logs -p 80:80  lancachenet/monolithic:latest
+docker run --restart unless-stopped --name sniproxy --detach -p 443:443 lancachenet/sniproxy:latest
 echo Please configure your dhcp server to serve dns as $HOST_IP
 ```
 Please check that `hostname -I` returns the correct IP before running this snippet
 
 
-## Changing from steamcache/steamcache and steamcache/generic
+## Changing from steamcache/steamcache and lancachenet/generic
 
 This new container is designed to replace an array of steamcache or generic containers with a single monolithic instance. However if you currently run a steamcache or generic setup then there a few things to note
 
-1) Your existing cache files are NOT compatible with steamcache/monolithic, unfortunately your cache will need repriming
+1) Your existing cache files are NOT compatible with lancachenet/monolithic, unfortunately your cache will need repriming
 2) You do not need multiple containers, a single monolithic container will cache ALL cdns without collision
-3) steamcache/monolithic should be compatible with your existing container's env vars so you can use the same run command you currently use, just change to steamcache/monolithic
+3) lancachenet/monolithic should be compatible with your existing container's env vars so you can use the same run command you currently use, just change to lancachenet/monolithic
 
 
 ## Origin and SSL
@@ -71,10 +71,10 @@ docker run \
   --restart unless-stopped \
   --name sniproxy \
   -p 443:443 \
-  steamcache/sniproxy:latest
+  lancachenet/sniproxy:latest
 ```
 
-Please read the [steamcache/sniproxy](https://github.com/steamcache/sniproxy) project for more information.
+Please read the [lancachenet/sniproxy](https://github.com/lancachenet/sniproxy) project for more information.
 
 ## DNS Entries
 
@@ -124,8 +124,9 @@ Steam in particular has some inherrent limitations caused by the adherence to th
 Consult your OS documentation in order to add additional IP addresses onto your docker cache host machine
 ### Step 2: Adding IP's to your cache container
 In order for this to work you need to add the port maps onto the relevant cdn container (for example steam). 
-* If you are using `steamcache/monolithic` then using `-p 80:80` should be sufficient as per the documentation. 
-* If you are using `steamcache/generic` or `steamcache/steamcache` then add multiple `-p <IPadddress>:80:80` for each IP you have added. For example `-p 10.10.1.30:80:80 -p 10.10.1.31:80:80`
+* If you are using `lancachenet/monolithic` then using `-p 80:80` should be sufficient as per the documentation. 
+* If you are using `lancachenet/generic` or `lancachenet/steamcache` then add multiple `-p <IPadddress>:80:80` for each IP you have added. For example `-p 10.10.1.30:80:80 -p 10.10.1.31:80:80`
+
 ### Step 3: Informing steamcache-dns of the extra IP's
 Finally we need to inform steamcache-dns that STEAM is now available on multiple IP addresses. This can be done on the command line using the following command `-e STEAMCACHE_IP="10.10.1.30 10.10.1.31"`. Note the quotes surrounding the multiple IP addresses.
 ### Step 4: Testing
