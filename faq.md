@@ -60,7 +60,7 @@ You can find more at the [lancachenet/sniproxy](https://github.com/lancachenet/s
 
 ## Can I cache Fortnite/Epic Games Launcher?
 
-Sadly no, it uses HTTPS and can't be cached.
+Yes, as of [2019-05-30](https://github.com/uklans/cache-domains/pull/89) - Epic Games have kindly moved their CDN servers and launcher to use HTTP for content delivery.
 
 ## Can I cache *some other service*
 
