@@ -44,11 +44,11 @@ jobs:
           name: Save docker image
           command: |
             mkdir -p workspace
-            docker save -o workspace/steamcache-monolithic.tar steamcache/monolithic:goss-test
+            docker save -o workspace/lancachenet-monolithic.tar lancachenet/monolithic:goss-test
       - persist_to_workspace:
           root: workspace
           paths:
-            steamcache-monolithic.tar
+            lancachenet-monolithic.tar
       - store_test_results:
           path: reports
       - store_artifacts:
@@ -66,6 +66,6 @@ jobs:
           name: "Deploy latest to docker hub"
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker load -i /tmp/workspace/steamcache-monolithic.tar
-            docker tag steamcache/monolithic:goss-test steamcache/monolithic:latest
-            docker push steamcache/monolithic:latest
+            docker load -i /tmp/workspace/lancachenet-monolithic.tar
+            docker tag lancachenet/monolithic:goss-test lancachenet/monolithic:latest
+            docker push lancachenet/monolithic:latest

@@ -8,7 +8,7 @@ if [ $? -ne 0 ]; then
 	exit $?
 fi
 
-docker build --tag steamcache/monolithic:goss-test .
+docker build --tag lancachenet/monolithic:goss-test .
 case $1 in
   circleci)
     shift;
@@ -18,7 +18,7 @@ case $1 in
 		shift
 	fi
     export GOSS_OPTS="$GOSS_OPTS --format junit"
-	dgoss run $@ steamcache/monolithic:goss-test > reports/goss/report.xml
+	dgoss run $@ lancachenet/monolithic:goss-test > reports/goss/report.xml
 	#store result for exit code
 	RESULT=$?
 	#delete the junk that goss currently outputs :(
@@ -31,10 +31,10 @@ case $1 in
 		KEEPIMAGE=true
 		shift
 	fi
-	dgoss run $@ steamcache/monolithic:goss-test
+	dgoss run $@ lancachenet/monolithic:goss-test
 	RESULT=$?
     ;;
 esac
-[[ "$KEEPIMAGE" == "true" ]] || docker rmi steamcache/monolithic:goss-test
+[[ "$KEEPIMAGE" == "true" ]] || docker rmi lancachenet/monolithic:goss-test
 
 exit $RESULT
