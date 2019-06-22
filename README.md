@@ -159,6 +159,11 @@ If you're a games publisher and you'd like LAN parties, gaming centers and other
 
 If you have any questions, please check [our FAQs](faq.md). If this doesn't answer your question, please raise an issue in GitHub.
 
+## How to help out
+To build just run `docker build --tag lancachenet/monolithic:testing .`. To test you can run `./run_tests.sh`
+
+If you want to test a new build with a forked uklans repo/branch you can specify `-e CACHE_DOMAIN_REPO=""` and even `-e NOFETCH=true` if using a locally bind mounted git repo.
+
 ## Thanks
 
  - Based on original configs from [ansible-lanparty](https://github.com/ti-mo/ansible-lanparty).
