@@ -26,7 +26,7 @@ You can use the [lancache-dns](https://hub.docker.com/r/lancachenet/lancache-dns
 
 For the cache files to persist you will need to mount a directory on the host machine into the container. You can do this using `-v <path on host>:/data/cache`. You can do the same with a logs directory as well if you want logs to be persistent as well.
 
-Run the container using the following to allow TCP port 80 (HTTP) and to mount `/cache/steam/data` directory into the container.
+Run the container using the following to allow TCP port 80 (HTTP) and to mount `/cache/data` directory into the container.
 
 ```
 docker run \
@@ -38,7 +38,7 @@ docker run \
   lancachenet/monolithic:latest
 ```
 
-Unlike lancachenet/generic this service will cache all cdn services (defined in the [uklans cache-domains repo](https://github.com/uklans/cache-domains) so multiple instances are not required
+Unlike lancachenet/generic this service will cache all cdn services defined in the [uklans cache-domains repo](https://github.com/uklans/cache-domains) so multiple instances are not required.
 
 ## Simple Full Stack startup
 
@@ -55,7 +55,7 @@ Please check that `hostname -I` returns the correct IP before running this snipp
 
 ## Changing from lancachenet/steamcache and lancachenet/generic
 
-This new container is designed to replace an array of steamcache or generic containers with a single monolithic instance. However if you currently run a steamcache or generic setup then there a few things to note
+This new container is designed to replace an array of steamcache or generic containers with a single monolithic instance. However if you currently run a steamcache or generic setup then there a few things to note.
 
 1) Your existing cache files are NOT compatible with lancachenet/monolithic, unfortunately your cache will need repriming
 2) You do not need multiple containers, a single monolithic container will cache ALL cdns without collision
@@ -106,20 +106,20 @@ CACHE_MEM_SIZE 500m
 CACHE_DISK_SIZE 1000000m
 ```
 
-In addition, there is an environment variable to control the max cache age
+In addition, there is an environment variable to control the max cache age.
 
 ```
 CACHE_MAX_AGE 3650d
 ````
 
-You can override these at run time by adding the following to your docker run command.  They accept the standard nginx notation for sizes (k/m/g/t) and durations (m/h/d)
+You can override these at run time by adding the following to your docker run command.  They accept the standard nginx notation for sizes (k/m/g/t) and durations (m/h/d).
 
 ```
 -e CACHE_MEM_SIZE=4000m -e CACHE_DISK_SIZE=1000g
 ```
 
 ## Tuning your cache
-Steam in particular has some inherrent limitations caused by the adherence to the HTTP spec connection pool. As such steam download speed are highly dependent on the latency between your server and the steam cdn servers. In the event you find your initial download speed with the default settings is slow this can be resolved by allocating more IP's to your ache. We suggest adding one IP at a time to see how much gain can be had (4 seems to work for a number of people)
+Steam in particular has some inherrent limitations caused by the adherence to the HTTP spec connection pool. As such steam's download speed is highly dependent on the latency between your server and the steam cdn servers. In the event you find your initial download speed with the default settings is slow this can be resolved by allocating more IP's to your cache. We suggest adding one IP at a time to see how much gain can be had (4 seems to work for a number of people).
 ### Step 1: Adding IP's to your docker host
 Consult your OS documentation in order to add additional IP addresses onto your docker cache host machine
 ### Step 2: Adding IP's to your cache container
@@ -130,7 +130,7 @@ In order for this to work you need to add the port maps onto the relevant cdn co
 ### Step 3: Informing lancache-dns of the extra IP's
 Finally we need to inform lancache-dns that STEAM is now available on multiple IP addresses. This can be done on the command line using the following command `-e STEAMCACHE_IP="10.10.1.30 10.10.1.31"`. Note the quotes surrounding the multiple IP addresses.
 ### Step 4: Testing
-Choose a game which has not been seen by the cache before (or clear your `/data/cache` folder) and start it downloading. Check to see what the maximum speed seen by your steam client is. If necessary repeat steps 1-3 with additional IPs until you see a download equivalent to your uncached steam client or no longer see an improvement vs the previous IP allocation.
+Choose a game which has not been seen by the cache before (or clear your `/data/cache` folder) and start downloading it. Check to see what the maximum speed seen by your steam client is. If necessary repeat steps 1-3 with additional IPs until you see a download equivalent to your uncached steam client or no longer see an improvement vs the previous IP allocation.
 
 ## Monitoring
 
