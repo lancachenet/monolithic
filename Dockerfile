@@ -1,5 +1,5 @@
-FROM steamcache/generic:latest
-MAINTAINER SteamCache.Net Team <team@steamcache.net>
+FROM lancachenet/generic:latest
+MAINTAINER LanCache.Net Team <team@lancache.net>
 
 ENV GENERICCACHE_VERSION 2
 ENV WEBUSER www-data

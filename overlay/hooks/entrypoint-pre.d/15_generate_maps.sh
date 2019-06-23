@@ -7,8 +7,11 @@ export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostCACHE_I
 if [[ ! -d .git ]]; then
 	git clone ${CACHE_DOMAIN_REPO} .
 fi
-git fetch origin
-git reset --hard origin/master
+
+if [[ "${NOFETCH:-false}" != "true" ]]; then
+	git fetch origin
+	git reset --hard origin/master
+fi
 TEMP_PATH=$(mktemp -d)
 OUTPUTFILE=${TEMP_PATH}/outfile.conf
 echo "map \$http_host \$cacheidentifier {" >> $OUTPUTFILE
