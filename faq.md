@@ -73,3 +73,7 @@ We prefer to use DNS-based interception This is because it is easier to deploy t
 If you already run a DNS server and are comfortable configuring new override DNS zones, you can also just do this from the list on [uklans/cache-domains](https://github.com/uklans/cache-domains). pfSense's DNS forwarder can easily be configured, and the project has scripts to generate config for unbound.
 
 Other options also involve transparently intercepting HTTP traffic at a network level either using WCCP on Cisco switches or on your router if it supports it.
+
+## Can I load some content into the cache ahead of my event?
+
+You could look at [zeropingheroes/lancache-autofill](https://github.com/zeropingheroes/lancache-autofill) as an aide to pre-loading popular games into the cache ahead of time to help kick start the cache
