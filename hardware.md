@@ -26,8 +26,7 @@ Served ~250 uniques, peaking at 1.8Gbps
 
 ## Low capacity
 
-
-
-
-
-
+CPU: Quad-core AMD Phenom X4 II 945 (old!)
+MEM: 16GB DDR3
+Disk: 2x2TB RAID0 + 512MB SSD LVM Cache.
+Without the LVM Cache the system will push around 300-400mb/s, with the SSD Cache pushing around 800-900mb/s
