@@ -115,7 +115,7 @@ CACHE_MAX_AGE 3560d
 You can override these at run time by adding the following to your docker run command.  They accept the standard nginx notation for sizes (k/m/g) and durations (m/h/d).
 
 ```
--e CACHE_MEM_SIZE=4000m -e CACHE_DISK_SIZE=1000g -e CACHE_MAX_AGE 3560d
+-e CACHE_MEM_SIZE=4000m -e CACHE_DISK_SIZE=1000g -e CACHE_MAX_AGE=3560d
 ```
 
 ## Tuning your cache
