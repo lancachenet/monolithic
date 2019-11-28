@@ -112,14 +112,16 @@ In addition, there is an environment variable to control the max cache age.
 CACHE_MAX_AGE 3560d
 ````
 
-You can override these at run time by adding the following to your docker run command.  They accept the standard nginx notation for sizes (k/m/g) and durations (m/h/d).
+You can override these at run time by adding the following to your docker run command.  They accept the standard nginx notation for sizes (m) and durations (m/h/d).
 
 ```
 -e CACHE_MEM_SIZE=4000m -e CACHE_DISK_SIZE=1000g -e CACHE_MAX_AGE 3560d
 ```
 
+CACHE_MEM_SIZE relates to the memory allocated to NGINX for the cache manager process.  1 megabyte will hold around 8000 cache entries, and for Monolithic slicing in 1MB slices, this means each 1M allocated will service around 8GB on disk.  The default size of 500MB should allow you to have a cache of up to 4TB quite comfortably.  Any other available memory in your cachebox should then be used for the Filesystem cache.
+
 ## Tuning your cache
-Steam in particular has some inherrent limitations caused by the adherence to the HTTP spec connection pool. As such steam's download speed is highly dependent on the latency between your server and the steam cdn servers. In the event you find your initial download speed with the default settings is slow this can be resolved by allocating more IP's to your cache. We suggest adding one IP at a time to see how much gain can be had (4 seems to work for a number of people).
+Steam in particular has some inherent limitations caused by strict adherence to the HTTP spec connection pool. As such Steam's download speed is highly dependent on the latency between your server and the Steam cdn servers. In the event you find your initial download speed with the default settings is slow this can be resolved by allocating more IP's to your cache. We suggest adding one IP at a time to see how much gain can be had (4 seems to work for a number of people).
 ### Step 1: Adding IP's to your docker host
 Consult your OS documentation in order to add additional IP addresses onto your docker cache host machine
 ### Step 2: Adding IP's to your cache container
