@@ -5,12 +5,12 @@ mkdir -p /data/cachedomains
 cd /data/cachedomains
 export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostCACHE_IDENTIFIERChecking=no"
 if [[ ! -d .git ]]; then
-	git clone ${CACHE_DOMAIN_REPO} .
+	git clone ${CACHE_DOMAINS_REPO} .
 fi
 
 if [[ "${NOFETCH:-false}" != "true" ]]; then
 	git fetch origin
-	git reset --hard origin/master
+	git reset --hard origin/${CACHE_DOMAINS_BRANCH}
 fi
 TEMP_PATH=$(mktemp -d)
 OUTPUTFILE=${TEMP_PATH}/outfile.conf

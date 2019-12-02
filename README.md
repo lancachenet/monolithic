@@ -164,7 +164,7 @@ If you have any questions, please check [our FAQs](faq.md). If this doesn't answ
 ## How to help out
 To build just run `docker build --tag lancachenet/monolithic:testing .`. To test you can run `./run_tests.sh`
 
-If you want to test a new build with a forked uklans repo/branch you can specify `-e CACHE_DOMAIN_REPO=""` and even `-e NOFETCH=true` if using a locally bind mounted git repo.
+If you want to test a new build with a forked uklans repo you can specify a combination of `-e CACHE_DOMAINS_REPO="https://github.com/vibroaxe/cache-domains.git" -e CACHE_DOMAINS_BRANCH="testing"` or even `-v <your repo here>:/data/cachedomains -e NOFETCH=true` if using a locally bind mounted git repo.
 
 ## Thanks
 
