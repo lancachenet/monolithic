@@ -1,0 +1,111 @@
+<html>
+<head>
+	<title>LanCache Host Checker</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="sites.js"></script>
+	<script>
+		function checkDomain(domainname) {
+			var re = /^\*\./g
+			var domainname = domainname.replace(re, "lancachetest.");
+			return new Promise(function(resolve, reject) {
+				var handleResponse = function(xhr) {
+					if (xhr.status == 204) {
+						var respondingHost = xhr.getResponseHeader("X-LanCache-Processed-By");
+						return resolve(respondingHost);
+					}
+					console.log("Problem accessing", domainname)
+					return resolve(0);
+				}
+				$.ajax("http://" + domainname + "/steamcache-heartbeat",
+				{
+					success: function(data, textStatus, xhr){ 
+						handleResponse(xhr)
+					},
+					error: function(xhr){ 
+						handleResponse(xhr)
+					},
+
+				})
+			})
+		}
+		$(document).ready(function() {
+			var cdntemplate = $("#cdntemplate");
+			var cdnElements = {};
+			var domaincount = 0;
+			var providercount = 0;
+			var callbacks = {};
+			var distinctCaches = [];
+			for (var cdn in cachedomains) {
+				callbacks[cdn] = [];
+				providercount++;
+				domaincount += cachedomains[cdn].length;
+				cdnElements[cdn] = cdntemplate.clone().attr('id', 'cdn'+cdn).appendTo($("#cdns"));
+				$(cdnElements[cdn]).find("#title").html(cdn);
+				$(cdnElements[cdn]).find("#totalcdndomaincount").html(cachedomains[cdn].length);
+				for (var domain in cachedomains[cdn]) {
+					callbacks[cdn].push(checkDomain(cachedomains[cdn][domain]))
+				}
+				Promise.all(callbacks[cdn]).then(function(responses) {
+					var success = 0;
+					var fail = 0;
+					for (var x in responses) {
+						var response = responses[x];
+						if (response) {
+							success++;
+							if (distinctCaches.indexOf(response) == -1) {
+								distinctCaches.push(response);
+							}
+						} else {
+							fail++;
+						}
+					}
+					var newstate = "alert-success";
+					if (fail > 0) {
+						newstate = "alert-warning";
+					}
+					if (success == 0) {
+						newstate = "alert-danger";
+					}
+					this.find(".item").removeClass("alert-info").addClass(newstate);
+					this.find("#workingcdndomaincount").html(success);
+				}.bind(cdnElements[cdn]));
+			}
+			$("#urltext").html(urltext)
+			$("#domaincount").html(domaincount)
+			$("#providercount").html(providercount)
+			cdntemplate.hide()
+		});
+	</script>
+	<style>
+		.container-fluid {
+			max-width: 95%;
+		}
+		.cdnentry {
+			padding: 5px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="jumbotron">
+			<div class="container">
+				<h1 class="display-4">Lancache/Monolithic Status page</h1>
+				<p class="lead">You currently have <b id="domaincount">0</b> domains spanning <b id="providercount">0</b> providers.</p>
+				<p id="urltext"></p>
+			</div>
+		</div>
+		<br>
+		<div id="cdns" class="row">
+			<div id="cdntemplate" class="cdnentry col-md-3 ">
+				<div class='item text-center border rounded alert-info'>
+					<b><span id="title">Nothing is defined?<br>I'm not sure how you've done this, but you have.<br>So well done.</span></b><br>
+					<span id="workingcdndomaincount">0</span>/<span id="totalcdndomaincount">0</span> domains working
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

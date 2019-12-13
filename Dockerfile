@@ -13,14 +13,15 @@ ENV CACHE_DOMAINS_REPO https://github.com/uklans/cache-domains.git
 ENV CACHE_DOMAINS_BRANCH master
 ENV UPSTREAM_DNS 8.8.8.8 8.8.4.4
 ENV NGINX_WORKER_PROCESSES auto
-
-COPY overlay/ /
+ENV HEALTHCHECK_HOSTNAME lancache.lan
+ENV HEALTHCHECK_ENABLE true
 
 RUN mkdir -m 755 -p /data/cachedomains		;\
 	mkdir -m 755 -p /tmp/nginx				;\
 	apt-get update							;\
 	apt-get install -y jq git				;
 
+COPY overlay/ /
 
 VOLUME ["/data/logs", "/data/cache", "/data/cachedomains", "/var/www"]
 
