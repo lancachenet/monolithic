@@ -17,7 +17,8 @@ OUTPUTFILE=${TEMP_PATH}/outfile.conf
 echo "map \"\$http_useragent---\$http_host\" \$cacheidentifier {" >> $OUTPUTFILE
 echo "    default \$http_host;" >> $OUTPUTFILE
 echo "    \"~Valve/Steam HTTP Client 1.0---.*\" steam;" >> $OUTPUTFILE
-echo "    hostnames;" >> $OUTPUTFILE
+#Next line probably no longer needed as we are now regexing to victory
+#echo "    hostnames;" >> $OUTPUTFILE
 jq -r '.cache_domains | to_entries[] | .key' cache_domains.json | while read CACHE_ENTRY; do 
 	#for each cache entry, find the cache indentifier
 	CACHE_IDENTIFIER=$(jq -r ".cache_domains[$CACHE_ENTRY].name" cache_domains.json)
@@ -33,7 +34,7 @@ jq -r '.cache_domains | to_entries[] | .key' cache_domains.json | while read CAC
 				CACHE_HOST=${CACHE_HOST// /}
 				echo "new host: $CACHE_HOST"
 				if [ ! "x${CACHE_HOST}" == "x" ]; then
-					echo "    *---${CACHE_HOST} ${CACHE_IDENTIFIER};" >> $OUTPUTFILE
+					echo "    ~.*---.*?$(sed -e "s/\./\\\./g" <<< ${CACHE_HOST}) ${CACHE_IDENTIFIER};"
 				fi
 			done
 		done
