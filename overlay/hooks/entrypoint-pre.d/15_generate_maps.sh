@@ -16,7 +16,7 @@ TEMP_PATH=$(mktemp -d)
 OUTPUTFILE=${TEMP_PATH}/outfile.conf
 echo "map \"\$http_useragent---\$http_host\" \$cacheidentifier {" >> $OUTPUTFILE
 echo "    default \$http_host;" >> $OUTPUTFILE
-echo "    \"~Valve/Steam HTTP Client 1.0---.*"\ steam;" >> $OUTPUTFILE
+echo "    \"~Valve/Steam HTTP Client 1.0---.*\" steam;" >> $OUTPUTFILE
 echo "    hostnames;" >> $OUTPUTFILE
 jq -r '.cache_domains | to_entries[] | .key' cache_domains.json | while read CACHE_ENTRY; do 
 	#for each cache entry, find the cache indentifier
