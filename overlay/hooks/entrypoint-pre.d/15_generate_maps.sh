@@ -3,7 +3,7 @@
 IFS=' '
 mkdir -p /data/cachedomains
 cd /data/cachedomains
-export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostCACHE_IDENTIFIERChecking=no"
+export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 if [[ ! -d .git ]]; then
 	git clone ${CACHE_DOMAINS_REPO} .
 fi
