@@ -7,31 +7,84 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 	<script src="sites.js"></script>
 	<script>
-		function checkDomain(domainname) {
+		wildcardPrefix = "lancachetest."
+		function hideAlert() {
+			$("#cache-info").hide();
+		}
+
+		function displayCdnAlert(cdn) {
+			console.log(cdn, cachedomains[cdn]);
+			if (cachedomains[cdn].brokenDomains.length == 0) {
+				return hideAlert();
+			}
+			var newHTML = "";
+			for (var x in cachedomains[cdn].brokenDomains) {
+				newHTML += cachedomains[cdn].brokenDomains[x]+"<br>";
+			}
+			displayAlert("The following domains did not resolve to a LanCache instance:", newHTML);
+		}
+		function displayAlert(title, content, type="warning") {
+			$("#cache-info").removeClass("alert-warning").removeClass("alert-danger").removeClass("alert-success").addClass("alert-"+type);
+			$("#cache-info-display-title").html("<b>"+title+"</b><br>");
+			$("#cache-info-display").html(content);
+			$("#cache-info").show();
+		}
+
+		function checkDomain(cdn, domainname) {
 			var re = /^\*\./g
-			var domainname = domainname.replace(re, "lancachetest.");
+			var domainname = domainname.replace(re, wildcardPrefix);
 			return new Promise(function(resolve, reject) {
 				var handleResponse = function(xhr) {
-					if (xhr.status == 204) {
-						var respondingHost = xhr.getResponseHeader("X-LanCache-Processed-By");
-						return resolve(respondingHost);
+					if (xhr.host.indexOf(wildcardPrefix) > -1) {
+						xhr.host = xhr.host.replace(wildcardPrefix, "*.") + " (via "+xhr.host+")";
 					}
-					console.log("Problem accessing", domainname)
-					return resolve(0);
+					var ret = {
+						host: xhr.host,
+						status: 2,
+						cdn: cdn,
+						respondingHost: false,
+					};
+					if (xhr.status == 204) {
+						ret.respondingHost = xhr.getResponseHeader("X-LanCache-Processed-By");
+						ret.status = 1;
+						return resolve(ret);
+					}
+					ret.status = 0;
+					return resolve(ret);
 				}
 				$.ajax("http://" + domainname + "/steamcache-heartbeat",
 				{
+					beforeSend: function(xhr, settings) {
+						xhr.host = settings.url.match(/^http:\/\/(.+?)\/.+/)[1];
+					},
 					success: function(data, textStatus, xhr){ 
 						handleResponse(xhr)
 					},
-					error: function(xhr){ 
+					error: function(xhr){
 						handleResponse(xhr)
 					},
 
 				})
 			})
 		}
+
 		$(document).ready(function() {
+			hideAlert();
+			$("#inputTestButton").click(function() {
+				var url = $("#inputTest").val();
+				checkDomain(false, url).then(function(response) {
+					var alertType = "danger";
+					var alertTitle = "Test failed";
+					var alertText = url+" did not resolve to a LanCache instance";
+					if (response.status == 1) {
+						alertType = "success";
+						alertTitle = "Test Succeeded";
+						alertText = url+" resolves to a LanCache instance named "+response.respondingHost;
+					}
+					displayAlert(alertTitle, alertText, alertType)
+					console.log(response);
+				})
+			});
 			var cdntemplate = $("#cdntemplate");
 			var cdnElements = {};
 			var domaincount = 0;
@@ -40,25 +93,32 @@
 			var distinctCaches = [];
 			for (var cdn in cachedomains) {
 				callbacks[cdn] = [];
+				cachedomains[cdn].brokenDomains = [];
 				providercount++;
-				domaincount += cachedomains[cdn].length;
+				domaincount += cachedomains[cdn].domains.length;
 				cdnElements[cdn] = cdntemplate.clone().attr('id', 'cdn'+cdn).appendTo($("#cdns"));
 				$(cdnElements[cdn]).find("#title").html(cdn);
-				$(cdnElements[cdn]).find("#totalcdndomaincount").html(cachedomains[cdn].length);
-				for (var domain in cachedomains[cdn]) {
-					callbacks[cdn].push(checkDomain(cachedomains[cdn][domain]))
+				$(cdnElements[cdn]).find("#tagline").html(cachedomains[cdn].description);
+				$(cdnElements[cdn]).find("#totalcdndomaincount").html(cachedomains[cdn].domains.length);
+				$(cdnElements[cdn]).click(function() {
+					displayCdnAlert($(this).find("#title").html());
+				});
+				for (var domain in cachedomains[cdn].domains) {
+					callbacks[cdn].push(checkDomain(cdn, cachedomains[cdn].domains[domain]))
 				}
 				Promise.all(callbacks[cdn]).then(function(responses) {
+					var cdnname = this.find("#title").html();
 					var success = 0;
 					var fail = 0;
 					for (var x in responses) {
 						var response = responses[x];
-						if (response) {
+						if (response.status == 1) {
 							success++;
-							if (distinctCaches.indexOf(response) == -1) {
-								distinctCaches.push(response);
+							if (distinctCaches.indexOf(response.respondingHost) == -1) {
+								distinctCaches.push(response.respondingHost);
 							}
 						} else {
+							cachedomains[response.cdn].brokenDomains.push(response.host);
 							fail++;
 						}
 					}
@@ -86,11 +146,15 @@
 		.cdnentry {
 			padding: 5px;
 		}
+		.margin-fix {
+			margin-top: 5px;
+			margin-bottom: 0px;
+		}
 	</style>
 </head>
 <body>
 	<div class="container-fluid">
-		<div class="jumbotron">
+		<div class="jumbotron margin-fix">
 			<div class="container">
 				<h1 class="display-4">Lancache/Monolithic Status page</h1>
 				<p class="lead">You currently have <b id="domaincount">0</b> domains spanning <b id="providercount">0</b> providers.</p>
@@ -99,9 +163,37 @@
 		</div>
 		<br>
 		<div id="cdns" class="row">
-			<div id="cdntemplate" class="cdnentry col-md-3 ">
+			<div id="cdn-tester" class="cdnentry col-md-12">
+				<div class="item text-center border rounded alert alert-secondary">
+					<div class="form-group margin-fix">
+						<div class="col-sm-6 offset-sm-3">
+							<div class="input-group">
+								<input type="text" class="form-control rounded" id="inputTest" placeholder="Check domain (Wildcards valid)">
+								<span class="input-group-btn">
+									&nbsp;
+									<button id="inputTestButton" class="btn btn-primary mb-2">Test</button>
+							   </span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="cdnentry col-md-12">
+				<div id="cache-info" class="item text-center border rounded alert alert-warning">
+					<button type="button" class="close" aria-label="Close">
+						<span aria-hidden="true" onclick="hideAlert()">&times;</span>
+					</button>
+					<span id="cache-info-display-title">
+						<b>The following domains did not resolve to a LanCache:</b><br>
+					</span>
+					<span id="cache-info-display">
+					</span>
+				</div>
+			</div>
+			<div id="cdntemplate" class="cdnentry col-md-3">
 				<div class='item text-center border rounded alert-info'>
-					<b><span id="title">Nothing is defined?<br>I'm not sure how you've done this, but you have.<br>So well done.</span></b><br>
+					<b><span id="title">Nothing is defined?<br>I'm not sure how you've done this, but you have.</span></b><br>
+					<span id="tagline">So well done.</span><br>
 					<span id="workingcdndomaincount">0</span>/<span id="totalcdndomaincount">0</span> domains working
 				</div>
 			</div>
