@@ -54,6 +54,9 @@ jobs:
       - store_artifacts:
           path: reports
           destination: reports
+      - store_artifacts:
+          path: workspace/lancachenet-monolithic.tar
+          destination: docker-lancachenet-monolithic.tar
   publish_latest:
     docker:
       - image: circleci/python:2-jessie
