@@ -14,7 +14,7 @@ if [[ "${NOFETCH:-false}" != "true" ]]; then
 fi
 TEMP_PATH=$(mktemp -d)
 OUTPUTFILE=${TEMP_PATH}/outfile.conf
-echo "map \"\$http_useragent---\$http_host\" \$cacheidentifier {" >> $OUTPUTFILE
+echo "map \"\$http_user_agent---\$http_host\" \$cacheidentifier {" >> $OUTPUTFILE
 echo "    default \$http_host;" >> $OUTPUTFILE
 echo "    \"~Valve\\/Steam\\ HTTP\\ Client\\ 1\.0---.*\" steam;" >> $OUTPUTFILE
 #Next line probably no longer needed as we are now regexing to victory
