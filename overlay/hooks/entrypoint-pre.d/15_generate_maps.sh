@@ -3,7 +3,7 @@
 IFS=' '
 mkdir -p /data/cachedomains
 cd /data/cachedomains
-export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostCACHE_IDENTIFIERChecking=no"
+export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 if [[ ! -d .git ]]; then
 	git clone ${CACHE_DOMAINS_REPO} .
 fi
@@ -14,9 +14,11 @@ if [[ "${NOFETCH:-false}" != "true" ]]; then
 fi
 TEMP_PATH=$(mktemp -d)
 OUTPUTFILE=${TEMP_PATH}/outfile.conf
-echo "map \$http_host \$cacheidentifier {" >> $OUTPUTFILE
-echo "    hostnames;" >> $OUTPUTFILE
+echo "map \"\$http_user_agent£££\$http_host\" \$cacheidentifier {" >> $OUTPUTFILE
 echo "    default \$http_host;" >> $OUTPUTFILE
+echo "    ~Valve\\/Steam\\ HTTP\\ Client\\ 1\.0£££.* steam;" >> $OUTPUTFILE
+#Next line probably no longer needed as we are now regexing to victory
+#echo "    hostnames;" >> $OUTPUTFILE
 jq -r '.cache_domains | to_entries[] | .key' cache_domains.json | while read CACHE_ENTRY; do 
 	#for each cache entry, find the cache indentifier
 	CACHE_IDENTIFIER=$(jq -r ".cache_domains[$CACHE_ENTRY].name" cache_domains.json)
@@ -32,7 +34,9 @@ jq -r '.cache_domains | to_entries[] | .key' cache_domains.json | while read CAC
 				CACHE_HOST=${CACHE_HOST// /}
 				echo "new host: $CACHE_HOST"
 				if [ ! "x${CACHE_HOST}" == "x" ]; then
-					echo "    ${CACHE_HOST} ${CACHE_IDENTIFIER};" >> $OUTPUTFILE
+					#Use sed to replace . with \. and * with .*
+					REGEX_CACHE_HOST=$(sed -e "s#\.#\\\.#g" -e "s#\*#\.\*#g" <<< ${CACHE_HOST})
+					echo "    ~.*£££.*?${REGEX_CACHE_HOST} ${CACHE_IDENTIFIER};" >> $OUTPUTFILE
 				fi
 			done
 		done
