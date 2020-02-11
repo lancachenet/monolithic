@@ -34,7 +34,9 @@ jq -r '.cache_domains | to_entries[] | .key' cache_domains.json | while read CAC
 				CACHE_HOST=${CACHE_HOST// /}
 				echo "new host: $CACHE_HOST"
 				if [ ! "x${CACHE_HOST}" == "x" ]; then
-					echo "    ~.*---.*?$(sed -e "s#\.#\\\.#g" -e "s#\*#\.\*#g" <<< ${CACHE_HOST}) ${CACHE_IDENTIFIER};" >> $OUTPUTFILE
+					#Use sed to replace . with \. and * with .*
+					REGEX_CACHE_HOST=$(sed -e "s#\.#\\\.#g" -e "s#\*#\.\*#g" <<< ${CACHE_HOST})
+					echo "    ~.*---.*?${REGEX_CACHE_HOST} ${CACHE_IDENTIFIER};" >> $OUTPUTFILE
 				fi
 			done
 		done
