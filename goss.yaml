@@ -20,7 +20,7 @@ process:
   supervisord:
     running: true
 http:
-  http://127.0.0.1/steamcache-heartbeat:
+  http://127.0.0.1/lancache-heartbeat:
     status: 204
     allow-insecure: false
     no-follow-redirects: false
