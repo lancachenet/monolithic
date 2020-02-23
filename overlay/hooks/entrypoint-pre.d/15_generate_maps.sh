@@ -5,7 +5,7 @@ mkdir -p /data/cachedomains
 echo "Bootstrapping Monolithic from ${CACHE_DOMAINS_REPO}"
 
 export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-pushd /data/cachedomains > /dev/null
+cd /data/cachedomains
 if [[ ! -d .git ]]; then
 	git clone ${CACHE_DOMAINS_REPO} .
 fi
@@ -19,7 +19,6 @@ if [[ "${NOFETCH:-false}" != "true" ]]; then
 	# Reenable error checking
 	set -e
 fi
-popd > /dev/null
 
 TEMP_PATH=$(mktemp -d)
 OUTPUTFILE=${TEMP_PATH}/outfile.conf
