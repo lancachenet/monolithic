@@ -1,5 +1,7 @@
 # Monolithic Game Download Cache Docker Container
 
+![Docker Pulls](https://img.shields.io/docker/pulls/lancachenet/monolithic?label=Monolithic)
+
 ## Introduction
 
 This docker container provides a caching proxy server for game download content. For any network with more than one PC gamer in connected this will drastically reduce internet bandwidth consumption. 
