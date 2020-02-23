@@ -21,6 +21,7 @@ RUN mkdir -m 755 -p /data/cachedomains		;\
 	apt-get update							;\
 	apt-get install -y jq git				;
 
+RUN git clone --depth=1 --no-single-branch https://github.com/uklans/cache-domains/ /data/cache-domains
 
 VOLUME ["/data/logs", "/data/cache", "/data/cachedomains", "/var/www"]
 
