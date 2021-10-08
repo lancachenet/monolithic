@@ -1,7 +1,7 @@
 FROM lancachenet/ubuntu-nginx:latest
 LABEL version=3
-LABEL description="Single caching container for caching game content at lan parties."
-LABEL maintainer=" LanCache.Net Team <team@lancache.net>"
+LABEL description="Single caching container for caching game content at LAN parties."
+LABEL maintainer="LanCache.Net Team <team@lancache.net>"
 
 ENV GENERICCACHE_VERSION=2 \
     CACHE_MODE=monolithic \
