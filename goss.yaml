@@ -13,7 +13,7 @@ command:
     exit-status: 0
     stdout:
     - Succesfully Cached
-    timeout: 10000
+    timeout: 20000
 process:
   nginx:
     running: true
