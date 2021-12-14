@@ -44,3 +44,5 @@ VOLUME ["/data/logs", "/data/cache", "/data/cachedomains", "/var/www"]
 
 EXPOSE 80 443
 WORKDIR /scripts
+
+HEALTHCHECK CMD curl --fail http://127.0.0.1/lancache-heartbeat  || exit 1
