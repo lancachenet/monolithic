@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
 set -e
 
 # Handle CACHE_MEM_SIZE deprecation
