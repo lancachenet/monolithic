@@ -17,6 +17,9 @@ ENV GENERICCACHE_VERSION=2 \
     CACHE_DOMAINS_BRANCH=master \
     NGINX_WORKER_PROCESSES=auto
 
+RUN	apt-get update							;\
+	apt-get install -y jq git				;
+
 COPY overlay/ /
 
 RUN rm /etc/nginx/sites-enabled/* /etc/nginx/stream-enabled/* ;\
@@ -31,12 +34,11 @@ RUN rm /etc/nginx/sites-enabled/* /etc/nginx/stream-enabled/* ;\
 	chown -R ${WEBUSER}:${WEBUSER} /data/	;\
 	mkdir -p /etc/nginx/sites-enabled	;\
 	ln -s /etc/nginx/sites-available/10_cache.conf /etc/nginx/sites-enabled/10_generic.conf; \
+	ln -s /etc/nginx/sites-available/upstream.conf /etc/nginx/sites-enabled/upstream.conf; \
 	ln -s /etc/nginx/stream-available/10_sni.conf /etc/nginx/stream-enabled/10_sni.conf
 
 RUN mkdir -m 755 -p /data/cachedomains		;\
-	mkdir -m 755 -p /tmp/nginx				;\
-	apt-get update							;\
-	apt-get install -y jq git				;
+	mkdir -m 755 -p /tmp/nginx
 
 RUN git clone --depth=1 --no-single-branch https://github.com/uklans/cache-domains/ /data/cachedomains
 
