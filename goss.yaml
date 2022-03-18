@@ -24,5 +24,7 @@ http:
     status: 204
     allow-insecure: false
     no-follow-redirects: false
+    headers:
+      - "Access-Control-Allow-Private-Network: true"
     timeout: 0
     body: []
