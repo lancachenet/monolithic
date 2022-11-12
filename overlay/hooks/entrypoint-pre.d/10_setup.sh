@@ -19,4 +19,4 @@ sed -i "s/slice 1m;/slice ${CACHE_SLICE_SIZE};/" /etc/nginx/sites-available/cach
 sed -i "s/UPSTREAM_DNS/${UPSTREAM_DNS}/"    /etc/nginx/sites-available/cache.conf.d/10_root.conf
 sed -i "s/UPSTREAM_DNS/${UPSTREAM_DNS}/"    /etc/nginx/sites-available/upstream.conf.d/10_resolver.conf
 sed -i "s/UPSTREAM_DNS/${UPSTREAM_DNS}/"    /etc/nginx/stream-available/10_sni.conf
-sed -i "s/UPSTREAM_DNS/${LOG_PARAMS}/"    /etc/nginx/sites-available/10_cache.conf
+sed -i "s/LOG_PARAMS/${LOG_PARAMS}/"    /etc/nginx/sites-available/10_cache.conf
