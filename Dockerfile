@@ -3,6 +3,9 @@ LABEL version=3
 LABEL description="Single caching container for caching game content at LAN parties."
 LABEL maintainer="LanCache.Net Team <team@lancache.net>"
 
+RUN	apt-get update							;\
+	apt-get install -y jq git				;
+
 ENV GENERICCACHE_VERSION=2 \
     CACHE_MODE=monolithic \
     WEBUSER=www-data \
@@ -17,9 +20,6 @@ ENV GENERICCACHE_VERSION=2 \
     CACHE_DOMAINS_BRANCH=master \
     NGINX_WORKER_PROCESSES=auto
 
-RUN	apt-get update							;\
-	apt-get install -y jq git				;
-
 COPY overlay/ /
 
 RUN rm /etc/nginx/sites-enabled/* /etc/nginx/stream-enabled/* ;\
@@ -27,18 +27,17 @@ RUN rm /etc/nginx/sites-enabled/* /etc/nginx/stream-enabled/* ;\
     chmod 754  /var/log/tallylog ; \
     id -u ${WEBUSER} &> /dev/null || adduser --system --home /var/www/ --no-create-home --shell /bin/false --group --disabled-login ${WEBUSER} ;\
     chmod 755 /scripts/*			;\
-	mkdir -m 755 -p /data/cache		;\
-	mkdir -m 755 -p /data/info		;\
-	mkdir -m 755 -p /data/logs		;\
-	mkdir -m 755 -p /tmp/nginx/		;\
-	chown -R ${WEBUSER}:${WEBUSER} /data/	;\
-	mkdir -p /etc/nginx/sites-enabled	;\
-	ln -s /etc/nginx/sites-available/10_cache.conf /etc/nginx/sites-enabled/10_generic.conf; \
-	ln -s /etc/nginx/sites-available/20_upstream.conf /etc/nginx/sites-enabled/20_upstream.conf; \
-	ln -s /etc/nginx/stream-available/10_sni.conf /etc/nginx/stream-enabled/10_sni.conf
-
-RUN mkdir -m 755 -p /data/cachedomains		;\
-	mkdir -m 755 -p /tmp/nginx
+	  mkdir -m 755 -p /data/cache		;\
+	  mkdir -m 755 -p /data/info		;\
+    mkdir -m 755 -p /data/logs		;\
+    mkdir -m 755 -p /tmp/nginx/		;\
+    chown -R ${WEBUSER}:${WEBUSER} /data/	;\
+    mkdir -p /etc/nginx/sites-enabled	;\
+    ln -s /etc/nginx/sites-available/10_cache.conf /etc/nginx/sites-enabled/10_generic.conf; \
+    ln -s /etc/nginx/sites-available/20_upstream.conf /etc/nginx/sites-enabled/20_upstream.conf; \
+    ln -s /etc/nginx/stream-available/10_sni.conf /etc/nginx/stream-enabled/10_sni.conf; \
+    mkdir -m 755 -p /data/cachedomains		;\
+    mkdir -m 755 -p /tmp/nginx
 
 RUN git clone --depth=1 --no-single-branch https://github.com/uklans/cache-domains/ /data/cachedomains
 
