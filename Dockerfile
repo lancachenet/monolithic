@@ -39,7 +39,7 @@ RUN rm /etc/nginx/sites-enabled/* /etc/nginx/stream-enabled/* ;\
     mkdir -m 755 -p /data/cachedomains		;\
     mkdir -m 755 -p /tmp/nginx
 
-RUN git clone --depth=1 --no-single-branch https://github.com/uklans/cache-domains/ /data/cachedomains
+RUN git clone --depth=1 --single-branch --branch ${CACHE_DOMAINS_BRANCH} ${CACHE_DOMAINS_REPO} /data/cachedomains
 
 VOLUME ["/data/logs", "/data/cache", "/data/cachedomains", "/var/www"]
 
