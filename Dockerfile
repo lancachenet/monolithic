@@ -18,7 +18,8 @@ ENV GENERICCACHE_VERSION=2 \
     LOGFILE_RETENTION=3560 \
     CACHE_DOMAINS_REPO="https://github.com/uklans/cache-domains.git" \
     CACHE_DOMAINS_BRANCH=master \
-    NGINX_WORKER_PROCESSES=auto
+    NGINX_WORKER_PROCESSES=auto \
+    NGINX_LOG_FORMAT=cachelog
 
 COPY overlay/ /
 
