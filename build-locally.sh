@@ -13,7 +13,7 @@ fi
 printf "${PURPLEBOLD}Building temporary modified Ubuntu image:\n"
 docker build -t lancachenet/ubuntu:latest --progress tty https://github.com/lancachenet/ubuntu.git
 
-#Removes standart Ubuntu image if not present before running:
+#Removes standard Ubuntu image if not present before running:
 if [ "$IMAGEEXISTS" == false ]; then
   printf "${PURPLEBOLD}Removing standart Ubuntu image:\n"
   docker rmi ubuntu
