@@ -6,7 +6,7 @@ PURPLEBOLD="$(tput setf 5 bold)"
 #Checks if image ubuntu already exists:
 
 IMAGEEXISTS=true
-if [[ "$(docker image inspect ubuntu >/dev/null 2>&1 && echo true || echo false)" = "false" ]]; then
+if [[ "$(docker image inspect ubuntu >/dev/null 2>&1 && echo true || echo false)" == "false" ]]; then
   IMAGEEXISTS=false
 fi
 
