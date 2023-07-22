@@ -15,7 +15,7 @@ docker build -t lancachenet/ubuntu:latest --progress tty https://github.com/lanc
 
 #Removes standard Ubuntu image if not present before running:
 if [ "$IMAGEEXISTS" == false ]; then
-  printf "${PURPLEBOLD}Removing standart Ubuntu image:\n"
+  printf "${PURPLEBOLD}Removing standard Ubuntu image:\n"
   docker rmi ubuntu
 fi
 
