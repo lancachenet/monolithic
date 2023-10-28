@@ -36,6 +36,7 @@ RUN rm /etc/nginx/sites-enabled/* /etc/nginx/stream-enabled/* ;\
     mkdir -p /etc/nginx/sites-enabled	;\
     ln -s /etc/nginx/sites-available/10_cache.conf /etc/nginx/sites-enabled/10_generic.conf; \
     ln -s /etc/nginx/sites-available/20_upstream.conf /etc/nginx/sites-enabled/20_upstream.conf; \
+    ln -s /etc/nginx/sites-available/30_metrics.conf /etc/nginx/sites-enabled/30_metrics.conf; \
     ln -s /etc/nginx/stream-available/10_sni.conf /etc/nginx/stream-enabled/10_sni.conf; \
     mkdir -m 755 -p /data/cachedomains		;\
     mkdir -m 755 -p /tmp/nginx
