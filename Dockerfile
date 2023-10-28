@@ -45,5 +45,5 @@ RUN git clone --depth=1 --no-single-branch https://github.com/uklans/cache-domai
 
 VOLUME ["/data/logs", "/data/cache", "/data/cachedomains", "/var/www"]
 
-EXPOSE 80 443
+EXPOSE 80 443 8080
 WORKDIR /scripts
