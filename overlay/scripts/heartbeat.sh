@@ -12,5 +12,5 @@ fi
 
 while [ 1 ]; do
     sleep $BEATTIME;
-	wget http://127.0.0.1/lancache-heartbeat -S -O - > /dev/null 2>&1 /dev/null
+	wget http://127.0.0.1/lancache-heartbeat -S -O - > /dev/null 2>&1
 done
