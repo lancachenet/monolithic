@@ -11,6 +11,7 @@ ENV GENERICCACHE_VERSION=2 \
     WEBUSER=www-data \
     CACHE_INDEX_SIZE=500m \
     CACHE_DISK_SIZE=1000g \
+    MIN_FREE_DISK=100g \
     CACHE_MAX_AGE=3560d \
     CACHE_SLICE_SIZE=1m \
     UPSTREAM_DNS="8.8.8.8 8.8.4.4" \
@@ -27,7 +28,7 @@ RUN rm /etc/nginx/sites-enabled/* /etc/nginx/stream-enabled/* ;\
     rm /etc/nginx/conf.d/gzip.conf ;\
     chmod 754  /var/log/tallylog ; \
     id -u ${WEBUSER} &> /dev/null || adduser --system --home /var/www/ --no-create-home --shell /bin/false --group --disabled-login ${WEBUSER} ;\
-    chmod 755 /scripts/*			;\
+    chmod 755 /scripts/*		;\
 	  mkdir -m 755 -p /data/cache		;\
 	  mkdir -m 755 -p /data/info		;\
     mkdir -m 755 -p /data/logs		;\
