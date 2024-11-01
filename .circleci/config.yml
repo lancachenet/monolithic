@@ -20,7 +20,7 @@ version: 2.1
 executors:
   testbuild-executor:
     machine:
-      image: ubuntu-2004:202201-02
+      image: default
 jobs:
   test:
     executor: testbuild-executor
