@@ -20,7 +20,7 @@ version: 2.1
 executors:
   testbuild-executor:
     machine:
-      image: latest
+      image: default
 jobs:
   test:
     executor: testbuild-executor
