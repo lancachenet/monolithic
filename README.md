@@ -1,12 +1,8 @@
 # Monolithic Game Download Cache Docker Container
 
-![Docker Pulls](https://img.shields.io/docker/pulls/lancachenet/monolithic?label=Monolithic) ![Docker Pulls](https://img.shields.io/docker/pulls/lancachenet/lancache-dns?label=Lancache-dns) ![Docker Pulls](https://img.shields.io/docker/pulls/lancachenet/sniproxy?label=Sniproxy) ![Docker Pulls](https://img.shields.io/docker/pulls/lancachenet/generic?label=Generic)
-
 ## Documentation
 
 The documentation for the LanCache.net project can be found on [our website](http://www.lancache.net)
-
-The specific documentation for this monolithic container is [here](http://lancache.net/docs/containers/monolithic/)
 
 If you have any problems after reading the documentation please see [the support page](http://lancache.net/support/) before opening a new issue on github.
 
