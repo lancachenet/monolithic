@@ -10,7 +10,7 @@ printf  "${PURPLEBOLD}Building temporary Ubuntu-Nginx image:\n"
 docker build -t lancachenet/ubuntu-nginx:latest --progress tty https://github.com/lancachenet/ubuntu-nginx.git
 
 printf "${PURPLEBOLD}Building Monolithic image:\n"
-docker build -t lancachenet/monolithic:latest --progress tty .
+docker build -t jessomadic/monolithic:latest --progress tty .
 
 printf "${PURPLEBOLD}Removing temporary Ubuntu image:\n"
 docker rmi lancachenet/ubuntu
@@ -19,4 +19,4 @@ printf "${PURPLEBOLD}Removing temporary Ubuntu-Nginx image:\n"
 docker rmi lancachenet/ubuntu-nginx
 
 printf "${PURPLEBOLD}Completed local build. Image now available as lancachenet/monolithic:latest\n"
-docker image ls lancachenet/monolithic:latest
+docker image ls jessomadic/monolithic:latest
