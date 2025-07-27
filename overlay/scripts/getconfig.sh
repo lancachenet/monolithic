@@ -7,8 +7,9 @@ get_file_contents() {
 		while IFS= read -r LINE; do
 			CLEANLINE=$(echo "${LINE}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 			if [[ "${CLEANLINE}" =~ ^include[[:space:]]+(.+) ]]; then
-				local INCLUDE="${BASH_REMATCH[1]}"
-				get_file_contents "${INCLUDE}"
+				local INCLUDE_EXPR="${BASH_REMATCH[1]}"
+				INCLUDE_EXPR="${INCLUDE_EXPR%;}"
+				eval "get_file_contents ${INCLUDE_EXPR}"
 			else
 				echo "${LINE}"
 			fi
