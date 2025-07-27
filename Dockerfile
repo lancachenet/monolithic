@@ -10,7 +10,7 @@ SHELL ["/bin/bash", "-c"]
 # hadolint ignore=DL3008
 RUN	<<EOF
   apt-get update
-  apt-get install -y jq git --no-install-recommends
+  apt-get install -y ca-certificates git jq --no-install-recommends
   apt-get -y clean
   rm -rf /var/lib/apt/lists/*
 EOF
