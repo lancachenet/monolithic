@@ -9,8 +9,8 @@ else
 	BEATTIME="${BEAT_TIME}"
 fi
 
-if [[ -z "${BEATTIME}" || ! "${BEATTIME}" =~ ^[0-9]+$ || "${BEATTIME}" -le 0 ]]; then
-	echo "Error: BEATTIME must be a positive integer." >&2
+if [[ -z "${BEATTIME}" || ! "${BEATTIME}" =~ ^[0-9]+([smhd])?$ ]]; then
+	echo "Error: BEATTIME must be a positive integer optionally followed by s, m, h, or d." >&2
 	exit 1
 fi
 
