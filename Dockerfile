@@ -46,11 +46,10 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
-git clone --depth=1 --no-single-branch https://github.com/uklans/cache-domains/ /data/cachedomains
+git clone --depth=1 --no-single-branch https://github.com/uklans/cache-domains.git /data/cachedomains
 git config --global --add safe.directory /data/cachedomains
 EOF
 
 VOLUME ["/data/logs", "/data/cache", "/data/cachedomains", "/var/www"]
-
 EXPOSE 80 443 8080
 WORKDIR /scripts
