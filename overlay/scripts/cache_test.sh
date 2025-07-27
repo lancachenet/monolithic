@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
-pageload1=$(curl http://www.worldtimeapi.org/api/timezone/ETC/GMT --resolve www.worldtimeapi.org:80:127.0.0.1)
+pageload1=$(curl http://www.httpbin.org/uuid --resolve www.httpbin.org:80:127.0.0.1)
 sleep 5
-pageload2=$(curl http://www.worldtimeapi.org/api/timezone/ETC/GMT --resolve www.worldtimeapi.org:80:127.0.0.1)
+pageload2=$(curl http://www.httpbin.org/uuid --resolve www.httpbin.org:80:127.0.0.1)
 sleep 5
-pageload3=$(curl http://worldtimeapi.org/api/timezone/ETC/GMT --resolve worldtimeapi.org:80:127.0.0.1)
+pageload3=$(curl http://httpbin.org/uuid --resolve httpbin.org:80:127.0.0.1)
 sleep 5
-pageload4=$(curl http://worldtimeapi.org/api/timezone/ETC/GMT --resolve worldtimeapi.org:80:127.0.0.1)
+pageload4=$(curl http://httpbin.org/uuid --resolve httpbin.org:80:127.0.0.1)
 if [ "${pageload1}" == "${pageload2}" ]; then
 	if [ "${pageload3}" == "${pageload4}" ]; then
 		if [ "${pageload1}" == "${pageload4}" ]; then
