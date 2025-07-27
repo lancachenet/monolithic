@@ -4,9 +4,7 @@ echo "Currently configured config:"
 /scripts/getconfig.sh /etc/nginx/nginx.conf
 
 echo "Checking nginx config"
-/usr/sbin/nginx -t
-
- [ $? -ne 0 ] || echo "Config check successful"
+/usr/sbin/nginx -t && echo "Config check successful"
 
 echo "Ready for supervisord startup"
 if [ -n "$CACHE_ROOT" ]

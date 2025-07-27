@@ -12,7 +12,7 @@ command:
   /scripts/cache_test.sh:
     exit-status: 0
     stdout:
-    - Succesfully Cached
+      - Succesfully Cached
     timeout: 20000
 process:
   nginx:
