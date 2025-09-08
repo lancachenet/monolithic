@@ -7,7 +7,7 @@ echo "Bootstrapping Monolithic from ${CACHE_DOMAINS_REPO}"
 export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 cd /data/cachedomains
 if [[ ! -d .git ]]; then
-	git clone ${CACHE_DOMAINS_REPO} .
+	git clone --depth=1 --single-branch ${CACHE_DOMAINS_REPO} .
 fi
 
 if [[ "${NOFETCH:-false}" != "true" ]]; then
