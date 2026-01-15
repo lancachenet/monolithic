@@ -9,11 +9,21 @@ if [[ "${ENABLE_UPSTREAM_KEEPALIVE}" != "true" ]]; then
     exit 0
 fi
 
-# Note: 'resolve' parameter not used - requires nginx 1.27.3+
-# Currently DNS resolution happens at nginx startup/reload
-# To enable dynamic DNS resolution when nginx >= 1.27.3, edit pools conf:
-#   1. Add 'resolver ${UPSTREAM_DNS} ipv6=off;' at start of the file
-#   2. Add 'resolve' parameter to each 'server' directive
+# DNS is resolved at generation time using UPSTREAM_DNS.
+# The refresh_upstreams.sh script re-runs this periodically to keep IPs current.
+#
+# Future: nginx 1.27.3+ supports dynamic DNS via 'resolve' parameter (previously commercial-only).
+# This would replace generation-time resolution and the refresh script. Example:
+#
+#   resolver $UPSTREAM_DNS ipv6=off;
+#   upstream example_com {
+#       zone lancache_upstreams 1m;
+#       server example.com resolve;
+#       keepalive 16;
+#       keepalive_timeout 5m;
+#   }
+#
+# See: https://nginx.org/en/docs/http/ngx_http_upstream_module.html#resolve
 
 IFS=' '
 cd /data/cachedomains
@@ -39,10 +49,7 @@ echo "    hostnames;" >> "$MAPS_TMP_FILE"
 echo "    default \$host;  # Fallback to direct proxy for unmapped domains" >> "$MAPS_TMP_FILE"
 echo "    *.steamcontent.com lancache_steamcontent_com; # Redirect all steam traffic" >> "$MAPS_TMP_FILE"
 
-# Loop through each cache service
-# Using process substitution to avoid subshell context issues with pipes
 while read CACHE_ENTRY; do
-    # Get service name
     SERVICE_NAME=$(jq -r ".cache_domains[$CACHE_ENTRY].name" cache_domains.json)
 
     echo "Processing service: ${SERVICE_NAME}"
@@ -57,7 +64,6 @@ while read CACHE_ENTRY; do
             continue
         fi
 
-        # Read each domain from the file
         while read DOMAIN; do
             # Skip empty lines and whitespace
             DOMAIN=$(echo "$DOMAIN" | tr -d '[:space:]')
