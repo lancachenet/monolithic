@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+if [[ "${ENABLE_UPSTREAM_KEEPALIVE}" != "true" ]]; then
+    exit 0
+fi
+
 REFRESH_INTERVAL=${UPSTREAM_REFRESH_INTERVAL:-1h}
 
 if [[ "$REFRESH_INTERVAL" == "0" ]]; then

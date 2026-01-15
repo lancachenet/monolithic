@@ -4,6 +4,11 @@ set -e
 # Generates upstream pools with keepalive for concrete (non-wildcard) domains
 # from cache_domains.json
 
+if [[ "${ENABLE_UPSTREAM_KEEPALIVE}" != "true" ]]; then
+    echo "Upstream keepalive disabled (set ENABLE_UPSTREAM_KEEPALIVE=true to enable)"
+    exit 0
+fi
+
 # Note: 'resolve' parameter not used - requires nginx 1.27.3+
 # Currently DNS resolution happens at nginx startup/reload
 # To enable dynamic DNS resolution when nginx >= 1.27.3, edit pools conf:
