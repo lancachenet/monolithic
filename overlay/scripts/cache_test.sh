@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
-pageload1=`curl http://www.worldtimeapi.org/api/timezone/ETC/GMT --resolve www.worldtimeapi.org:80:127.0.0.1`
-sleep 5
-pageload2=`curl http://www.worldtimeapi.org/api/timezone/ETC/GMT --resolve www.worldtimeapi.org:80:127.0.0.1`
-sleep 5
-pageload3=`curl http://worldtimeapi.org/api/timezone/ETC/GMT --resolve worldtimeapi.org:80:127.0.0.1`
-sleep 5
-pageload4=`curl http://worldtimeapi.org/api/timezone/ETC/GMT --resolve worldtimeapi.org:80:127.0.0.1`
+pageload1=`curl http://ping1.lancache.net/api/timezone/ETC/GMT --resolve ping1.lancache.net:80:127.0.0.1`
+sleep 2
+pageload2=`curl http://ping1.lancache.net/api/timezone/ETC/GMT --resolve ping1.lancache.net:80:127.0.0.1`
+sleep 2
+pageload3=`curl http://ping2.lancache.net/api/timezone/ETC/GMT --resolve ping2.lancache.net:80:127.0.0.1`
+sleep 2
+pageload4=`curl http://ping2.lancache.net/api/timezone/ETC/GMT --resolve ping2.lancache.net:80:127.0.0.1`
 if [ "$pageload1" == "$pageload2" ]; then
 	if [ "$pageload3" == "$pageload4" ]; then
 		if [ "$pageload1" == "$pageload4" ]; then
