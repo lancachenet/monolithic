@@ -4,7 +4,7 @@ LABEL description="Single caching container for caching game content at LAN part
 LABEL maintainer="LanCache.Net Team <team@lancache.net>"
 
 RUN	apt-get update							;\
-	apt-get install -y jq git				;
+	apt-get install -y jq git dnsutils		;
 
 ENV GENERICCACHE_VERSION=2 \
     CACHE_MODE=monolithic \
