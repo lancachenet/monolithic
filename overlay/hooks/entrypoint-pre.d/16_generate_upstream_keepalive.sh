@@ -9,6 +9,9 @@ if [[ "${ENABLE_UPSTREAM_KEEPALIVE}" != "true" ]]; then
     exit 0
 fi
 
+# Normalize UPSTREAM_DNS (allow semicolons like lancache-dns)
+UPSTREAM_DNS="$(echo -n "${UPSTREAM_DNS}" | sed 's/[;]/ /g')"
+
 # DNS is resolved at generation time using UPSTREAM_DNS.
 # The refresh_upstreams.sh script re-runs this periodically to keep IPs current.
 #
