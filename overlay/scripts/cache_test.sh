@@ -15,10 +15,10 @@ if [ "${pageload1}" == "${pageload2}" ]; then
 			echo "Error caching test page, pages 1+3 are identical"
 
 			echo "pageload1:"
-			echo ${pageload1}
+			echo "${pageload1}"
 
 			echo "pageload3:"
-			echo ${pageload3}
+			echo "${pageload3}"
 
 			exit 3
 		else
@@ -30,10 +30,10 @@ if [ "${pageload1}" == "${pageload2}" ]; then
 		echo "Error caching test page, pages 3+4 differed"
 
 		echo "pageload3:"
-		echo ${pageload3}
+		echo "${pageload3}"
 
 		echo "pageload4:"
-		echo ${pageload4}
+		echo "${pageload4}"
 
 		exit 2
 	fi
@@ -42,10 +42,10 @@ else
 	echo "Error caching test page, pages 1+2 differed"
 
 	echo "pageload1:"
-	echo ${pageload1}
+	echo "${pageload1}"
 
 	echo "pageload2:"
-	echo ${pageload2}
+	echo "${pageload2}"
 
 	exit 1
 fi
