@@ -1,39 +1,35 @@
 #!/bin/bash
 
 get_file_contents() {
-	FILES=$1
-	local FILE;
-	for FILE in $FILES; do
-		echo "# Including $FILE"
-		local LINE
-		while read LINE; do
-			CLEANLINE=`echo $LINE | sed -e 's/^[[:space:]]*//g' -e 's/[[:space:]]*\$//g'`
-			if [[ "$CLEANLINE" =~ ^include ]]; then
-				local CL_LEN
-				local INCUDE
-				CL_LEN=${#CLEANLINE}-9;
-				INCLUDE=${CLEANLINE:8:$CL_LEN}
-				get_file_contents "$INCLUDE"
+	local FILE
+	for FILE in "$@"; do
+		echo "# Including ${FILE}"
+		while IFS= read -r LINE; do
+			CLEANLINE=$(echo "${LINE}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+			if [[ "${CLEANLINE}" =~ ^include[[:space:]]+(.+) ]]; then
+				local INCLUDE_EXPR="${BASH_REMATCH[1]}"
+				INCLUDE_EXPR="${INCLUDE_EXPR%;}"
+				eval "get_file_contents ${INCLUDE_EXPR}"
 			else
-				echo $LINE
+				echo "${LINE}"
 			fi
-		done < $FILE
-		echo "# Finished including $FILE"
-
+		done <"${FILE}"
+		echo "# Finished including ${FILE}"
 	done
 }
 
-
 main() {
+	local ABS_PATH
+	ABS_PATH=$(readlink -f "${1}") || {
+		echo "Failed to resolve path: ${1}" >&2
+		exit 1
+	}
 
-	echo "NGINX CONFIG DUMP FOR $1"
+	echo "NGINX CONFIG DUMP FOR ${ABS_PATH}"
 
-	cd `dirname $1`
+	cd "$(dirname "${ABS_PATH}")" || exit 1
 
-	get_file_contents $1
-
+	get_file_contents "${ABS_PATH}"
 }
 
-
-
-main `readlink -f $1`
+main "${1}"

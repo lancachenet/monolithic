@@ -3,20 +3,20 @@
 
 PURPLEBOLD="$(tput setf 5 bold)"
 
-printf "${PURPLEBOLD}Building temporary modified Ubuntu image:\n"
+printf "%sBuilding temporary modified Ubuntu image:\n" "${PURPLEBOLD}"
 docker build -t lancachenet/ubuntu:latest --progress tty https://github.com/lancachenet/ubuntu.git
 
-printf  "${PURPLEBOLD}Building temporary Ubuntu-Nginx image:\n"
+printf "%sBuilding temporary Ubuntu-Nginx image:\n" "${PURPLEBOLD}"
 docker build -t lancachenet/ubuntu-nginx:latest --progress tty https://github.com/lancachenet/ubuntu-nginx.git
 
-printf "${PURPLEBOLD}Building Monolithic image:\n"
+printf "%sBuilding Monolithic image:\n" "${PURPLEBOLD}"
 docker build -t lancachenet/monolithic:latest --progress tty .
 
-printf "${PURPLEBOLD}Removing temporary Ubuntu image:\n"
+printf "%sRemoving temporary Ubuntu image:\n" "${PURPLEBOLD}"
 docker rmi lancachenet/ubuntu
 
-printf "${PURPLEBOLD}Removing temporary Ubuntu-Nginx image:\n"
+printf "%sRemoving temporary Ubuntu-Nginx image:\n" "${PURPLEBOLD}"
 docker rmi lancachenet/ubuntu-nginx
 
-printf "${PURPLEBOLD}Completed local build. Image now available as lancachenet/monolithic:latest\n"
+printf "%sCompleted local build. Image now available as lancachenet/monolithic:latest\n" "${PURPLEBOLD}"
 docker image ls lancachenet/monolithic:latest

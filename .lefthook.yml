@@ -1,0 +1,6 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: megalinter
+      run: docker run --rm -e USER=$(id -u) -e GROUP=$(id -g) -v "$PWD:/tmp/lint" oxsecurity/megalinter:beta
+      stage_fixed: true
