@@ -39,14 +39,7 @@ jobs:
 
   build-and-push:
     needs: test
-    strategy:
-      matrix:
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-latest
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -94,65 +87,16 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}
           tags: |
             type=raw,value=dev-${{ steps.branch.outputs.safe_name }}
-          flavor: |
-            suffix=-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         timeout-minutes: 60
         with:
           context: .
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
-          cache-to: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }},mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-amd64
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-amd64,mode=max
           provenance: false
-
-  create-manifest:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Get branch name
-        id: branch
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ github.event.inputs.branch }}" ]]; then
-            BRANCH="${{ github.event.inputs.branch }}"
-          else
-            BRANCH="${GITHUB_REF#refs/heads/}"
-          fi
-          SAFE_BRANCH=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
-          echo "safe_name=${SAFE_BRANCH}" >> $GITHUB_OUTPUT
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4
-        timeout-minutes: 5
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Prepare image name
-        id: image
-        run: |
-          IMAGE_NAME=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-          echo "name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
-
-      - name: Create and push multi-arch manifest
-        run: |
-          IMAGE=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}
-          TAG="dev-${{ steps.branch.outputs.safe_name }}"
-          echo "Creating manifest for: ${IMAGE}:${TAG}"
-          docker buildx imagetools create -t ${IMAGE}:${TAG} \
-            ${IMAGE}:${TAG}-amd64 \
-            ${IMAGE}:${TAG}-arm64

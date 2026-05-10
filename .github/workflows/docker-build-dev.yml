@@ -32,14 +32,7 @@ jobs:
 
   build-and-push:
     needs: test
-    strategy:
-      matrix:
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-latest
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -72,53 +65,16 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}
           tags: |
             type=raw,value=dev
-          flavor: |
-            suffix=-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         timeout-minutes: 60
         with:
           context: .
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
-          cache-to: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }},mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-amd64
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-amd64,mode=max
           provenance: false
-
-  create-manifest:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4
-        timeout-minutes: 5
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Prepare image name
-        id: image
-        run: |
-          IMAGE_NAME=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-          echo "name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
-
-      - name: Create and push multi-arch manifest
-        run: |
-          IMAGE=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}
-          echo "Creating manifest for: ${IMAGE}:dev"
-          docker buildx imagetools create -t ${IMAGE}:dev \
-            ${IMAGE}:dev-amd64 \
-            ${IMAGE}:dev-arm64

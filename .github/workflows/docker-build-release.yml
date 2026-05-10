@@ -59,14 +59,7 @@ jobs:
   build-and-push:
     needs: [check-trigger, test]
     if: ${{ needs.check-trigger.outputs.should-run == 'true' }}
-    strategy:
-      matrix:
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-latest
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -110,76 +103,16 @@ jobs:
             type=raw,value=latest
             type=raw,value=release
             type=raw,value=${{ steps.version.outputs.VERSION }}
-          flavor: |
-            suffix=-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         timeout-minutes: 60
         with:
           context: .
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
-          cache-to: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }},mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-amd64
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cache-amd64,mode=max
           provenance: false
-
-  create-manifest:
-    needs: [check-trigger, build-and-push]
-    if: ${{ needs.check-trigger.outputs.should-run == 'true' && success() }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          ref: master
-
-      - name: Get release version
-        id: version
-        run: |
-          VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
-          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4
-        timeout-minutes: 5
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Prepare image name
-        id: image
-        run: |
-          IMAGE_NAME=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-          echo "name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          images: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}
-          tags: |
-            type=raw,value=latest
-            type=raw,value=release
-            type=raw,value=${{ steps.version.outputs.VERSION }}
-
-      - name: Create and push multi-arch manifests
-        env:
-          TAGS: ${{ steps.meta.outputs.json }}
-        run: |
-          echo "$TAGS" | jq -r '.tags[]' | while IFS= read -r tag; do
-            echo "Creating manifest for: $tag"
-            docker buildx imagetools create -t ${tag} \
-              ${tag}-amd64 \
-              ${tag}-arm64
-          done
