@@ -22,3 +22,52 @@ sed -i "s/UPSTREAM_DNS/${UPSTREAM_DNS}/"    /etc/nginx/sites-available/upstream.
 sed -i "s/UPSTREAM_DNS/${UPSTREAM_DNS}/"    /etc/nginx/stream-available/10_sni.conf
 sed -i "s/LOG_FORMAT/${NGINX_LOG_FORMAT}/"  /etc/nginx/sites-available/10_cache.conf
 sed -i "s/LOG_FORMAT/${NGINX_LOG_FORMAT}/"  /etc/nginx/sites-available/20_upstream.conf
+
+# Configure nginx stdout logging (for debugging)
+if [[ "${NGINX_LOG_TO_STDOUT}" == "true" ]]; then
+    sed -i "s|NGINX_STDOUT_LOGFILE|/dev/stdout|" /etc/supervisor/conf.d/nginx.conf
+else
+    sed -i "s|NGINX_STDOUT_LOGFILE|/dev/null|" /etc/supervisor/conf.d/nginx.conf
+fi
+
+# Process timeout configuration if template exists
+if [ -f /etc/nginx/conf.d/99_timeouts.conf.template ]; then
+    cp /etc/nginx/conf.d/99_timeouts.conf.template /etc/nginx/conf.d/99_timeouts.conf
+    sed -i "s/NGINX_PROXY_CONNECT_TIMEOUT/${NGINX_PROXY_CONNECT_TIMEOUT}/" /etc/nginx/conf.d/99_timeouts.conf
+    sed -i "s/NGINX_PROXY_SEND_TIMEOUT/${NGINX_PROXY_SEND_TIMEOUT}/" /etc/nginx/conf.d/99_timeouts.conf
+    sed -i "s/NGINX_PROXY_READ_TIMEOUT/${NGINX_PROXY_READ_TIMEOUT}/" /etc/nginx/conf.d/99_timeouts.conf
+    sed -i "s/NGINX_SEND_TIMEOUT/${NGINX_SEND_TIMEOUT}/" /etc/nginx/conf.d/99_timeouts.conf
+fi
+
+# Handle NOSLICE_FALLBACK - automatic detection and routing of hosts that don't support Range requests
+if [[ "${NOSLICE_FALLBACK}" == "true" ]]; then
+    echo "Enabling automatic no-slice fallback (threshold: ${NOSLICE_THRESHOLD} failures)"
+
+    # Enable nginx configs for noslice routing
+    mv /etc/nginx/sites-available/cache.conf.d/15_noslice.conf.disabled \
+       /etc/nginx/sites-available/cache.conf.d/15_noslice.conf 2>/dev/null || true
+    mv /etc/nginx/sites-available/cache.conf.d/root/05_noslice_routing.conf.disabled \
+       /etc/nginx/sites-available/cache.conf.d/root/05_noslice_routing.conf 2>/dev/null || true
+
+    # Replace CACHE_MAX_AGE in noslice config
+    sed -i "s/CACHE_MAX_AGE/${CACHE_MAX_AGE}/" /etc/nginx/sites-available/cache.conf.d/15_noslice.conf
+
+    # Initialize blocklist file if it doesn't exist
+    if [[ ! -f /data/noslice-hosts.map ]]; then
+        cp /var/noslice-hosts.map /data/noslice-hosts.map
+        chown ${WEBUSER}:${WEBUSER} /data/noslice-hosts.map
+    fi
+
+    # Initialize state file if it doesn't exist
+    if [[ ! -f /data/noslice-state.json ]]; then
+        echo '{}' > /data/noslice-state.json
+        chown ${WEBUSER}:${WEBUSER} /data/noslice-state.json
+    fi
+
+    # Enable the noslice-detector supervisor service
+    mv /etc/supervisor/conf.d/noslice-detector.conf.disabled \
+       /etc/supervisor/conf.d/noslice-detector.conf 2>/dev/null || true
+
+    # Make detector script executable
+    chmod +x /scripts/noslice-detector.sh
+fi
