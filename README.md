@@ -50,6 +50,11 @@ These are particularly useful when you need to match specific user/group permiss
   - Set to "false" to disable automatic detection
 - `NOSLICE_THRESHOLD` - Number of slice failures before a host is added to the blocklist (default: 3)
 
+**Reset the blocklist:**
+```bash
+docker exec lancache-monolithic /scripts/reset-noslice.sh
+```
+
 ### Network Configuration
 
 - `UPSTREAM_DNS` - DNS servers to use for upstream resolution (default: "8.8.8.8 8.8.4.4")
