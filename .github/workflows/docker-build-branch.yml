@@ -31,6 +31,9 @@ jobs:
           curl -fsSL https://goss.rocks/install | sh
           echo "$HOME/bin" >> $GITHUB_PATH
 
+      - name: Build test image
+        run: docker build -t lancachenet/monolithic:goss-test .
+
       - name: Run goss tests
         run: ./run-tests.sh
 
