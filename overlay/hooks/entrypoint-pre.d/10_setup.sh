@@ -39,6 +39,13 @@ if [ -f /etc/nginx/conf.d/99_timeouts.conf.template ]; then
     sed -i "s/NGINX_SEND_TIMEOUT/${NGINX_SEND_TIMEOUT}/" /etc/nginx/conf.d/99_timeouts.conf
 fi
 
+# 30_maps.conf always includes /data/noslice-hosts.map inside the map block,
+# so the file must exist before nginx starts regardless of NOSLICE_FALLBACK.
+if [[ ! -f /data/noslice-hosts.map ]]; then
+    cp /var/noslice-hosts.map /data/noslice-hosts.map
+    chown ${WEBUSER}:${WEBUSER} /data/noslice-hosts.map
+fi
+
 # Handle NOSLICE_FALLBACK - automatic detection and routing of hosts that don't support Range requests
 if [[ "${NOSLICE_FALLBACK}" == "true" ]]; then
     echo "Enabling automatic no-slice fallback (threshold: ${NOSLICE_THRESHOLD} failures)"
@@ -51,12 +58,6 @@ if [[ "${NOSLICE_FALLBACK}" == "true" ]]; then
 
     # Replace CACHE_MAX_AGE in noslice config
     sed -i "s/CACHE_MAX_AGE/${CACHE_MAX_AGE}/" /etc/nginx/sites-available/cache.conf.d/15_noslice.conf
-
-    # Initialize blocklist file if it doesn't exist
-    if [[ ! -f /data/noslice-hosts.map ]]; then
-        cp /var/noslice-hosts.map /data/noslice-hosts.map
-        chown ${WEBUSER}:${WEBUSER} /data/noslice-hosts.map
-    fi
 
     # Initialize state file if it doesn't exist
     if [[ ! -f /data/noslice-state.json ]]; then
