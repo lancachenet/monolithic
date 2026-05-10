@@ -51,6 +51,16 @@ jq -r '.cache_domains | to_entries[] | .key' cache_domains.json | while read CAC
 	done
 done
 echo "}" >> $OUTPUTFILE
+
+# Append the noslice_host map so it is always present alongside $cacheidentifier
+echo "" >> $OUTPUTFILE
+echo "# Map for hosts that don't support HTTP Range requests (causes slice errors)" >> $OUTPUTFILE
+echo "# Managed by the noslice-detector script" >> $OUTPUTFILE
+echo 'map $http_host $noslice_host {' >> $OUTPUTFILE
+echo "    default 0;" >> $OUTPUTFILE
+echo "    include /data/noslice-hosts.map;" >> $OUTPUTFILE
+echo "}" >> $OUTPUTFILE
+
 cat $OUTPUTFILE
-cp $OUTPUTFILE /etc/nginx/conf.d/30_maps.conf
+cp $OUTPUTFILE /etc/nginx/maps.d/30_maps.conf
 rm -rf $TEMP_PATH
