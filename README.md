@@ -46,7 +46,7 @@ These are particularly useful when you need to match specific user/group permiss
   - Blocklisted hosts are routed to a no-slice location that caches without using byte-range requests
   - This fixes caching issues with servers like RenegadeX (patches.totemarts.services) that don't properly support Range requests
   - No-slice responses are marked with an `X-LanCache-NoSlice: true` header
-  - Blocklist is persisted at `/data/noslice-hosts.map` and survives container restarts
+  - Blocklist is persisted at `/data/cache/noslice-hosts.map` and survives container restarts and recreation
   - Set to "false" to disable automatic detection
 - `NOSLICE_THRESHOLD` - Number of slice failures before a host is added to the blocklist (default: 3)
 
@@ -54,6 +54,8 @@ These are particularly useful when you need to match specific user/group permiss
 ```bash
 docker exec lancache-monolithic /scripts/reset-noslice.sh
 ```
+
+> The blocklist and failure-count state are stored under `/data/cache/` so they survive container recreation (image updates, `docker compose down && up`). Plain `docker restart` also preserves them.
 
 ### Network Configuration
 

@@ -58,7 +58,7 @@ echo "# Map for hosts that don't support HTTP Range requests (causes slice error
 echo "# Managed by the noslice-detector script" >> $OUTPUTFILE
 echo 'map $http_host $noslice_host {' >> $OUTPUTFILE
 echo "    default 0;" >> $OUTPUTFILE
-echo "    include /data/noslice-hosts.map;" >> $OUTPUTFILE
+echo "    include /data/cache/noslice-hosts.map;" >> $OUTPUTFILE
 echo "}" >> $OUTPUTFILE
 
 cat $OUTPUTFILE

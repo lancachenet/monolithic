@@ -10,8 +10,8 @@ set -e
 # Configuration
 NOSLICE_THRESHOLD=${NOSLICE_THRESHOLD:-3}
 ERROR_LOG="/data/logs/error.log"
-STATE_FILE="/data/noslice-state.json"
-BLOCKLIST_FILE="/data/noslice-hosts.map"
+STATE_FILE="/data/cache/noslice-state.json"
+BLOCKLIST_FILE="/data/cache/noslice-hosts.map"
 LOCK_FILE="/tmp/noslice-detector.lock"
 
 # Logging helper

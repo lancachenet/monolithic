@@ -1,6 +1,6 @@
   # No-slice location for hosts that don't support HTTP Range requests
   # Automatically enabled when NOSLICE_FALLBACK=true
-  # Hosts are added to /data/noslice-hosts.map by the noslice-detector script
+  # Hosts are added to /data/cache/noslice-hosts.map by the noslice-detector script
 
   # Named location for no-slice caching
   location @noslice {
