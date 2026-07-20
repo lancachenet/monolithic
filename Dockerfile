@@ -3,8 +3,11 @@ LABEL version=3
 LABEL description="Single caching container for caching game content at LAN parties."
 LABEL maintainer="LanCache.Net Team <team@lancache.net>"
 
-RUN	apt-get update							;\
-	apt-get install -y jq git				;
+# Refresh nginx from Ubuntu security updates even when the base image is cached.
+RUN apt-get update ;\
+    apt-get install -y jq git nginx-full ;\
+    apt-get -y clean ;\
+    rm -rf /var/lib/apt/lists/*
 
 ENV GENERICCACHE_VERSION=2 \
     CACHE_MODE=monolithic \
