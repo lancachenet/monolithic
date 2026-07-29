@@ -1,0 +1,7 @@
+    # Route hosts in the noslice blocklist to @noslice location
+    # $noslice_host is set via map in maps.d/30_maps.conf
+    # The blocklist is managed by the noslice-detector script
+    error_page 418 = @noslice;
+    if ($noslice_host = 1) {
+      return 418;
+    }
