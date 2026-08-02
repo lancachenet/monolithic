@@ -10,7 +10,7 @@ get_file_contents() {
 			CLEANLINE=`echo $LINE | sed -e 's/^[[:space:]]*//g' -e 's/[[:space:]]*\$//g'`
 			if [[ "$CLEANLINE" =~ ^include ]]; then
 				local CL_LEN
-				local INCUDE
+				local INCLUDE
 				CL_LEN=${#CLEANLINE}-9;
 				INCLUDE=${CLEANLINE:8:$CL_LEN}
 				get_file_contents "$INCLUDE"
