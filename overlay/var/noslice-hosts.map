@@ -1,0 +1,5 @@
+# Auto-generated noslice hosts blocklist
+# Hosts listed here don't support HTTP Range requests properly
+# They are automatically routed to @noslice location (slice disabled)
+# This file is managed by the noslice-detector script
+# Format: "hostname" 1;

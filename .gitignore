@@ -1,1 +1,19 @@
 reports
+
+# Environment files
+.env
+
+# Claude Code
+.claude
+
+# Serena
+.serena/
+
+# Docker volumes and data
+data/
+
+# Logs
+*.log
+
+# Windows artifacts
+nul

@@ -1,0 +1,11 @@
+[program:noslice-detector]
+command=/scripts/noslice-detector.sh
+user=root
+autostart=true
+autorestart=true
+startsecs=5
+startretries=3
+redirect_stderr=true
+stdout_logfile=/data/logs/noslice-detector.log
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=3
