@@ -27,6 +27,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Test origin discovery and DNS configuration
+          command: python3 -m unittest discover -s tests -v
+      - run:
           name: Install goss
           command: |
             # rather than give internet scripts SU rights, we install to local user bin and add to path
@@ -41,6 +44,17 @@ jobs:
             # Don't forget path!
             export PATH=$PATH:~/bin
             ./run-tests.sh --circleci --keepimage
+      - run:
+          name: Test origin transport on the existing nginx base
+          command: |
+            docker run --rm --network=none --entrypoint python3 \
+              -v "$PWD:/src:ro" -w /src lancachenet/monolithic:goss-test \
+              tests/integration_origin_dns.py
+      - run:
+          name: Test native DNS on a pinned modern nginx
+          command: |
+            docker build -f tests/Dockerfile.origin-dns -t monolithic:origin-dns-fixture .
+            docker run --rm --network=none monolithic:origin-dns-fixture
       - run:
           name: Save docker image
           command: |

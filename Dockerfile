@@ -4,7 +4,7 @@ LABEL description="Single caching container for caching game content at LAN part
 LABEL maintainer="LanCache.Net Team <team@lancache.net>"
 
 RUN	apt-get update							;\
-	apt-get install -y jq git				;
+	apt-get install -y jq git python3 dnsutils				;
 
 ENV GENERICCACHE_VERSION=2 \
     CACHE_MODE=monolithic \
@@ -20,7 +20,8 @@ ENV GENERICCACHE_VERSION=2 \
     CACHE_DOMAINS_REPO="https://github.com/uklans/cache-domains.git" \
     CACHE_DOMAINS_BRANCH=master \
     NGINX_WORKER_PROCESSES=auto \
-    NGINX_LOG_FORMAT=cachelog
+    NGINX_LOG_FORMAT=cachelog \
+    ORIGIN_KEEPALIVE_ENABLED=false
 
 COPY overlay/ /
 
