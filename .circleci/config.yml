@@ -1,5 +1,4 @@
 workflows:
-  version: 2.1
   build_test_deploy:
     jobs:
       - test
