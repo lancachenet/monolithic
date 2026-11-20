@@ -5,6 +5,13 @@ file:
   /data/logs/error.log:
     exists: true
     contains: []
+package:
+  openssh-client:
+    installed: false
+  git:
+    installed: true
+  jq:
+    installed: true
 port:
   tcp:80:
     listening: true
@@ -14,6 +21,10 @@ command:
     stdout:
     - Succesfully Cached
     timeout: 20000
+  apt-lists-empty:
+    exec: "ls /var/lib/apt/lists | grep -v '^partial$' | wc -l"
+    exit-status: 0
+    stdout: ["0"]
 process:
   nginx:
     running: true

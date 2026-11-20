@@ -3,8 +3,11 @@ LABEL version=3
 LABEL description="Single caching container for caching game content at LAN parties."
 LABEL maintainer="LanCache.Net Team <team@lancache.net>"
 
-RUN	apt-get update							;\
-	apt-get install -y jq git				;
+RUN	apt-get -y update						&&\
+	apt-get -y upgrade						&&\
+	apt-get -y install --no-install-recommends jq git ca-certificates	&&\
+	apt-get -y clean						&&\
+	rm -rf /var/lib/apt/lists/*
 
 ENV GENERICCACHE_VERSION=2 \
     CACHE_MODE=monolithic \
