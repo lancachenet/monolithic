@@ -5,12 +5,17 @@ file:
   /data/logs/error.log:
     exists: true
     contains: []
+  /etc/nginx/modules-enabled/50-mod-http-echo.conf:
+    exists: true
+    contents: ["ngx_http_echo_module.so"]
 package:
   openssh-client:
     installed: false
   git:
     installed: true
   jq:
+    installed: true
+  libnginx-mod-http-echo:
     installed: true
 port:
   tcp:80:
@@ -37,3 +42,11 @@ http:
     no-follow-redirects: false
     timeout: 0
     body: []
+  http://127.0.0.1/lancache-whoami:
+    status: 200
+    request-headers: ["X-Whoami-Test: goss"]
+    headers: ["Content-Type: text/plain"]
+    body:
+    - "remote_addr: 127.0.0.1"
+    - "GET /lancache-whoami HTTP/1.1"
+    - "X-Whoami-Test: goss"
